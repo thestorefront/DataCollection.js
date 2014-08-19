@@ -1,0 +1,34 @@
+{
+  "name": "data-collection",
+  "version": "1.0.3",
+  "description": "Manipulate large, in-memory datasets with ease",
+  "main": "data_collection.js",
+  "files": [
+    "data_collection.js",
+    "tests.js",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thestorefront/DataCollection.js.git"
+  },
+  "keywords": [
+    "data",
+    "collection",
+    "database",
+    "ORM",
+    "storage",
+    "manipulation",
+    "filter"
+  ],
+  "author": "Keith Horwood",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thestorefront/DataCollection.js/issues"
+  },
+  "homepage": "https://github.com/thestorefront/DataCollection.js"
+}
