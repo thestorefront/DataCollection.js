@@ -1,4 +1,4 @@
-# DataCollection.js !['coverage'](http://img.shields.io/badge/coverage-95.5%25-brightgreen.svg)
+# DataCollection !['coverage'](http://img.shields.io/badge/coverage-95.5%25-brightgreen.svg)
 
 Manipulate large, in-memory datasets with ease.
 

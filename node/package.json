@@ -1,6 +1,6 @@
 {
   "name": "data-collection",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Manipulate large, in-memory datasets with ease",
   "main": "data_collection.js",
   "files": [
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/thestorefront/DataCollection.js.git"
+    "url": "https://github.com/thestorefront/DataCollection.git"
   },
   "keywords": [
     "data",
@@ -28,7 +28,7 @@
   "author": "Keith Horwood",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/thestorefront/DataCollection.js/issues"
+    "url": "https://github.com/thestorefront/DataCollection/issues"
   },
-  "homepage": "https://github.com/thestorefront/DataCollection.js"
+  "homepage": "https://github.com/thestorefront/DataCollection"
 }
