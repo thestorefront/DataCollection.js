@@ -444,6 +444,8 @@
 
     this.__validate__();
 
+    key = (key + '').replace(/[^A-Za-z0-9]/gi, '_');
+
     sortDesc = !!sortDesc;
 
     var sortFn = new Function(
