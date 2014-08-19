@@ -1,7 +1,6 @@
 # DataCollection !['coverage'](http://img.shields.io/badge/coverage-95.5%25-brightgreen.svg)
 
-DataCollection is a JavaScript library that allows you to manipulate large,
-in-memory datasets with ease.
+Manipulate large, in-memory datasets with ease using JavaScript.
 
 Inspired by modern Object Relational Managers, DataCollection is a
 JavaScript library for storage, filtration, manipulation and accession of large
