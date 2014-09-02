@@ -1,6 +1,6 @@
 # DataCollection.js !['coverage'](http://img.shields.io/badge/coverage-95.5%25-brightgreen.svg)
 
-Manipulate large, in-memory datasets with ease using JavaScript.
+Manipulate data from API responses with ease.
 
 Inspired by modern Object Relational Managers, DataCollection.js is a
 JavaScript library for storage, filtration, manipulation and accession of large
