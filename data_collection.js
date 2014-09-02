@@ -73,6 +73,7 @@
 
       for(var i = 0, len = data.length; i < len; i++) {
         var row = data[i];
+        if(!row || typeof row !== 'object') { continue; }
         var newRow = Object.create(null);
 
         /* Fill keys */
@@ -95,6 +96,7 @@
 
       for(var i = 0, len = data.length; i < len; i++) {
         var row = data[i];
+        if(!row || typeof row !== 'object') { continue; }
         var newRow = Object.create(null);
 
         /* Fill keys */

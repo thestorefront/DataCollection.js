@@ -73,6 +73,7 @@ DataCollection.prototype.__prepare__ = function(data) {
 
     for(var i = 0, len = data.length; i < len; i++) {
       var row = data[i];
+      if(!row || typeof row !== 'object') { continue; }
       var newRow = Object.create(null);
 
       /* Fill keys */
@@ -95,6 +96,7 @@ DataCollection.prototype.__prepare__ = function(data) {
 
     for(var i = 0, len = data.length; i < len; i++) {
       var row = data[i];
+      if(!row || typeof row !== 'object') { continue; }
       var newRow = Object.create(null);
 
       /* Fill keys */
@@ -318,7 +320,7 @@ DataCollectionQuery.prototype.__compare = {
   'icontains': function(a, b) { return a.toLowerCase().indexOf(b.toLowerCase()) > -1; },
   'contains': function(a, b) { return a.indexOf(b) > -1; },
   'in': function(a, b) { return b.indexOf(a) > -1; },
-  'not_in': function(a, b) { return b.indexOf(a) === -1; },
+  'not_in': function(a, b) { return b.indexOf(a) === -1; }
 };
 
 DataCollectionQuery.prototype.__filter = function(filters, exclude) {
@@ -443,7 +445,7 @@ DataCollectionQuery.prototype.remove = function() {
 DataCollectionQuery.prototype.sort = function(key, sortDesc) {
 
   this.__validate__();
-  
+
   key = (key + '').replace(/[^A-Za-z0-9]/gi, '_');
 
   sortDesc = !!sortDesc;
