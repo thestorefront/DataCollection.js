@@ -1,19 +1,19 @@
-# DataCollection !['coverage'](http://img.shields.io/badge/coverage-95.5%25-brightgreen.svg)
+# DataCollection.js !['coverage'](http://img.shields.io/badge/coverage-95.5%25-brightgreen.svg)
 
 Manipulate large, in-memory datasets with ease using JavaScript.
 
-Inspired by modern Object Relational Managers, DataCollection is a
+Inspired by modern Object Relational Managers, DataCollection.js is a
 JavaScript library for storage, filtration, manipulation and accession of large
 datasets. It is ideal for working with data returned from RESTful API
 endpoints.
 
 Boasting synchronous performance that nears native Array manipulation for large
-(>10,000) recordsets, let DataCollection do your heavy lifting for you.
+(>10,000) recordsets, let DataCollection.js do your heavy lifting for you.
 
 
 # Installation
 
-You can begin using DataCollection by embedding the following script (assumes
+You can begin using DataCollection.js by embedding the following script (assumes
   it has been placed in your root directory)
 
 ### Web
