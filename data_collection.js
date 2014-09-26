@@ -49,6 +49,7 @@
   DataCollection.prototype.__prepare__ = function(data) {
 
     var newData = Array(data.length);
+    var n = 0;
     var keys = [];
     var key;
     var keyLength;
@@ -97,7 +98,7 @@
       for(var i = 0, len = data.length; i < len; i++) {
         var row = data[i];
         if(!row || typeof row !== 'object') { continue; }
-        var newRow = Object.create(null);
+        var newRow = indexedRows[row[index]] || (newData[n++] = Object.create(null));
 
         /* Fill keys */
         for(var j = 0; j < keyLength; j++) {
@@ -112,9 +113,10 @@
         }
 
         indexedRows[newRow[index]] = newRow;
-        newData[i] = newRow;
 
       }
+
+      newData = newData.slice(0, n);
 
     }
 

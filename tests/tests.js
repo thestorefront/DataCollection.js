@@ -120,6 +120,20 @@
         return true;
       })(), 'Insert added correct data');
 
+
+      var updateRow = {
+        id: 6,
+        location: 'Winterfull'
+      };
+
+      dc.insert(updateRow);
+
+      assert.ok(dc.query().count() === 6, 'Duplicate id inserted to replace old one');
+
+      assert.ok(dc.query().last().location === 'Winterfull', 'Duplicate id overwrote old data');
+
+      assert.ok(dc.query().last().first_name === 'Rob', '.insert kept old data that wasn\'t overwritten');
+
       assert.ok(dc.query().last().is_bastard === false, 'Mapping worked for new row');
 
       assert.ok(dc.destroy(6).first_name === 'Rob', 'Destroy returned correct row');

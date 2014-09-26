@@ -1,6 +1,6 @@
 {
   "name": "data-collection",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Manipulate large, in-memory datasets with ease",
   "main": "data_collection.js",
   "files": [
