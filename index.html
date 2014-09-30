@@ -32,7 +32,7 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h1>
-<a name="datacollectionjs-" class="anchor" href="#datacollectionjs-"><span class="octicon octicon-link"></span></a>DataCollection.js <img src="http://img.shields.io/badge/coverage-95.5%25-brightgreen.svg" alt="'coverage'">
+<a name="datacollectionjs-" class="anchor" href="#datacollectionjs-"><span class="octicon octicon-link"></span></a>DataCollection.js <img src="http://img.shields.io/badge/coverage-100%25-brightgreen.svg" alt="'coverage'">
 </h1>
 
 <p>Manipulate data from API responses with ease.</p>
@@ -54,12 +54,12 @@ endpoints.</p>
 <h3>
 <a name="web" class="anchor" href="#web"><span class="octicon octicon-link"></span></a>Web</h3>
 
-<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/data_collection.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/data_collection-1.1.0.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
 </pre></div>
 
 <p>Alternatively, the minified version can be found at</p>
 
-<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/data_collection-min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/data_collection-1.1.0-min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
 </pre></div>
 
 <p>You can then start using <code>DataCollection</code> objects with</p>
@@ -376,12 +376,15 @@ insert( [Array] data )
 <hr><h5>
 <a name="datacollectionqueryprototypefilter" class="anchor" href="#datacollectionqueryprototypefilter"><span class="octicon octicon-link"></span></a>DataCollectionQuery.prototype.filter</h5>
 
-<pre><code>filter( [Object] filters )
+<pre><code>filter( [Object] filters_1, ..., [Object] filters_n )
   returns new DataCollectionQuery
 </code></pre>
 
 <p>Returns a new <code>DataCollectionQuery</code> containing a referential subset of its
-  parent. <em>Contains</em> filtered values (see: <strong>Filters</strong>)</p>
+  parent. <em>Contains</em> filtered values (see: <strong>Filters</strong>).</p>
+
+<p>Providing new filter objects via separate arguments does a logical OR between
+  the filter sets. (Within a filter set is logical AND.)</p>
 
 <hr><h5>
 <a name="datacollectionqueryprototypeexclude" class="anchor" href="#datacollectionqueryprototypeexclude"><span class="octicon octicon-link"></span></a>DataCollectionQuery.prototype.exclude</h5>
