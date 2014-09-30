@@ -53,7 +53,6 @@
 
       var dc = new DataCollection(characters);
 
-
       assert.ok((function() {
         var cur, keys, key;
         var result = dc.query().values();
@@ -73,11 +72,114 @@
         return (arr instanceof Array) && arr[0] === 1 && arr[1] === 2;
       })(), '.values(key) gives array of items');
 
+      assert.ok((function() {
+        try {
+          dc.fetch(3);
+        } catch(e) {
+          return true;
+        }
+        return false;
+      })(), 'As expected, failed (error) to fetch without an index set');
+
+      assert.ok((function() {
+        try {
+          dc.destroy(3);
+        } catch(e) {
+          return true;
+        }
+        return false;
+      })(), 'As expected, failed (error) to destroy without an index set');
+
       dc.defineIndex('id');
 
       assert.ok(dc.__index !== null, 'Index set properly');
 
       assert.ok(dc.exists(1), 'Index applied correctly');
+
+      var destroyedRow = dc.destroy(3);
+
+      assert.ok(destroyedRow.first_name === 'Catelyn', 'Destroyed proper result in middle of set');
+
+      assert.ok((function() {
+        try {
+          dc.destroy(3);
+        } catch(e) {
+          return true;
+        }
+        return false;
+      })(), 'As expected, failed (error) to destroy already destroyed row');
+
+      assert.ok(dc.__find__(destroyedRow) === -1, 'Could not find destroyed row');
+
+      dc.load();
+
+      assert.ok(dc.query().count() === 0, 'Loaded an empty dataset correctly');
+
+      assert.ok(dc.query().first() === null, 'First value of empty dataset returned null');
+
+      assert.ok(dc.query().last() === null, 'Last value of empty dataset returned null');
+
+      var oldQuery = dc.query().filter();
+
+      dc.load(characters);
+
+      assert.ok((function() {
+        try {
+          oldQuery.values();
+        } catch(e) {
+          return true;
+        }
+        return false;
+      })(), 'As expected, failed (error) to get values from outdated DataCollectionQuery');
+
+      assert.ok((function() {
+        try {
+          dc.query().filter({first_name__eats: 'names can\'t eat'});
+        } catch(e) {
+          return true;
+        }
+        return false;
+      })(), 'As expected, failed (error) to use invalid filter type');
+
+      assert.ok((function() {
+        try {
+          dc.query().each(null);
+        } catch(e) {
+          return true;
+        }
+        return false;
+      })(), 'As expected, failed (error) to use non-function for DataCollectionQuery.each');
+
+      assert.ok(dc.query().count() === dc.query().filter().count(), 'Empty filter used empty object as filter params');
+
+      assert.ok(dc.query().count() === dc.query().filter(null, null).count(), 'Filter given invalid arguments used empty objects as filter params');
+
+      assert.ok((function() {
+        try {
+          dc.defineIndex(null);
+        } catch(e) {
+          return true;
+        }
+        return false;
+      })(), 'As expected, failed (error) to define non-string index');
+
+      assert.ok((function() {
+        try {
+          dc.createMapping(null);
+        } catch(e) {
+          return true;
+        }
+        return false;
+      })(), 'As expected, failed (error) to create mapping with non-string key');
+
+      assert.ok((function() {
+        try {
+          dc.createMapping('is_bastard', null);
+        } catch(e) {
+          return true;
+        }
+        return false;
+      })(), 'As expected, failed (error) to create mapping with invalid function');
 
       dc.createMapping('is_bastard', function(row) { return row.last_name === 'Snow'; });
 
@@ -119,7 +221,6 @@
         }
         return true;
       })(), 'Insert added correct data');
-
 
       var updateRow = {
         id: 6,
@@ -277,6 +378,27 @@
         });
         return ok;
       })(), 'Exclude worked');
+
+      assert.ok((function() {
+        var ok = true;
+        dc.query().filter({first_name__in: ['Catelyn', 'Eddard']}, {age__in: [15, 40]}).each(function(row) {
+          if(!ok) { return; }
+          ok = (['Catelyn', 'Eddard'].indexOf(row.first_name) > -1 || [15, 40].indexOf(row.age) > -1);
+        });
+        return ok;
+      })(), 'Filter with OR (separated values) worked');
+
+      assert.ok(dc.query().filter({first_name__in: ['Catelyn', 'Eddard']}, {age__in: [15, 40]}).count() === 4, 'Filter with OR (separated objects) gave correct number of rows');
+
+      assert.ok((function() {
+        var first = dc.query().filter({age: 15}, {age: 40}, {age: 33}).values();
+        var second = dc.query().filter({age__in: [15, 40, 33]}).values();
+        if(first.length !== second.length) { return false; }
+        for(var i = 0, len = first.length; i < len; i++) {
+          if(first[i] !== second[i]) { return false; }
+        }
+        return true;
+      })(), 'Filter with OR gave same values as __in for same field');
 
       var dcSpawn = dc.query().spawn();
 

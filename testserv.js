@@ -12,14 +12,14 @@ http.createServer(function(req, res) {
     res.end(fs.readFileSync('./tests/tests.js'));
     return;
   }
-  if(req.url === '/data_collection.js') {
+  if(req.url === '/data_collection-1.1.0.js') {
     res.setHeader('Content-Type', 'application/javascript');
-    res.end(fs.readFileSync('./data_collection.js'));
+    res.end(fs.readFileSync('./data_collection-1.1.0.js'));
     return;
   }
-  if(req.url === '/data_collection-min.js') {
+  if(req.url === '/data_collection-1.1.0-min.js') {
     res.setHeader('Content-Type', 'application/javascript');
-    res.end(fs.readFileSync('./data_collection-min.js'));
+    res.end(fs.readFileSync('./data_collection-1.1.0-min.js'));
     return;
   }
   res.setHeader('Content-Type', 'text/html');

@@ -3,18 +3,10 @@ module.exports = DataCollection;
 function DataCollection(data) {
 
   this.__index = null;
-  this.__indexedRows = Object.create(null);
-
+  this.__instance = null;
   this.__map = Object.create(null);
 
-  this.__instance = null;
-  this.__increment__();
-
-  this._data = [];
-
-  if(data instanceof Array) {
-    this.load(data);
-  }
+  this.load(data);
 
 };
 
@@ -22,9 +14,13 @@ DataCollection.prototype.__instances = 0;
 
 DataCollection.prototype.__increment__ = function() {
 
-  if(!this.__parent) {
-    this.__instance = this.constructor.prototype.__instances++;
-  }
+  this.__instance = this.constructor.prototype.__instances++;
+
+};
+
+DataCollection.prototype.__uniqid__ = function() {
+
+  return this.__uniqid++;
 
 };
 
@@ -33,11 +29,11 @@ DataCollection.prototype.__find__ = function(row) {
   var data = this._data;
   var len = data.length;
 
-  if(data[(len >> 1) + 1] === row) {
-    return (len >> 1) + 1;
+  if(data[len >>> 1] === row) {
+    return len >>> 1;
   }
 
-  for(var i = 0; i < (len >> 1); i++) {
+  for(var i = 0; i < (len >>> 1); i++) {
     if(data[i] === row) { return i; }
     if(data[len - i - 1] === row) { return len - i - 1; }
   }
@@ -75,7 +71,7 @@ DataCollection.prototype.__prepare__ = function(data) {
     for(var i = 0, len = data.length; i < len; i++) {
       var row = data[i];
       if(!row || typeof row !== 'object') { continue; }
-      var newRow = Object.create(null);
+      var newRow = Object.defineProperty(Object.create(null), '__uniqid__', {value: this.__uniqid__()});
 
       /* Fill keys */
       for(var j = 0; j < keyLength; j++) {
@@ -98,7 +94,7 @@ DataCollection.prototype.__prepare__ = function(data) {
     for(var i = 0, len = data.length; i < len; i++) {
       var row = data[i];
       if(!row || typeof row !== 'object') { continue; }
-      var newRow = indexedRows[row[index]] || (newData[n++] = Object.create(null));
+      var newRow = indexedRows[row[index]] || (newData[n++] = Object.defineProperty(Object.create(null), '__uniqid__', {value: this.__uniqid__()}));
 
       /* Fill keys */
       for(var j = 0; j < keyLength; j++) {
@@ -126,11 +122,11 @@ DataCollection.prototype.__prepare__ = function(data) {
 
 DataCollection.prototype.defineIndex = function(key) {
 
-  if(this.__parent) {
-    throw new Error('Can only define indices on parent DataCollection');
+  if(typeof key !== 'string') {
+    throw new Error('Must have a valid string as an index parameter');
   }
 
-  this.__index = key;
+  this.__index = key + '';
 
   var index = key;
   var indexedRows = Object.create(null);
@@ -148,8 +144,12 @@ DataCollection.prototype.defineIndex = function(key) {
 
 DataCollection.prototype.createMapping = function(key, fnMap) {
 
-  if(this.__parent) {
-    throw new Error('Can only define maps on parent DataCollection');
+  if(typeof key !== 'string') {
+    throw new Error('Must have a valid string as an key parameter for mapping');
+  }
+
+  if(typeof fnMap !== 'function') {
+    throw new Error('Mapping function must be a valid function');
   }
 
   this.__map[key] = fnMap;
@@ -193,6 +193,7 @@ DataCollection.prototype.destroy = function(indexedValue) {
     throw new Error('Can not destroy, index does not exist');
   }
 
+  var a = this.__find__(row);
   this._data.splice(this.__find__(row), 1);
   delete this.__indexedRows[indexedValue];
 
@@ -257,6 +258,9 @@ DataCollection.prototype.load = function(data) {
     data = [].slice.call(arguments);
   }
 
+  this.__indexedRows = Object.create(null);
+  this.__uniqid = 0;
+
   this._data = this.__prepare__(data);
   this.__increment__();
 
@@ -279,21 +283,12 @@ DataCollection.prototype.query = function() {
 
 };
 
-
-
-/* DataCollectionQuery */
-
-
+/*
+  DataCollectionQuery
+    Can only be constructed via DataCollection
+*/
 
 function DataCollectionQuery(parent, data) {
-
-  if(!(parent instanceof DataCollection) && parent !== null) {
-    throw new Error('DataCollectionQuery requires valid DataCollection parent');
-  }
-
-  if(!(data instanceof Array)) {
-    throw new Error('DataCollectionQuery requires valid Array of data');
-  }
 
   this.__parent = parent;
   this.__parentInstance = parent.__instance;
@@ -325,65 +320,105 @@ DataCollectionQuery.prototype.__compare = {
   'not_in': function(a, b) { return b.indexOf(a) === -1; }
 };
 
-DataCollectionQuery.prototype.__filter = function(filters, exclude) {
+DataCollectionQuery.prototype.__filter = function(filterArray, exclude) {
 
   this.__validate__();
 
   exclude = !!exclude;
 
+  for(var i = 0, len = filterArray.length; i < len; i++) {
+    if(typeof filterArray[i] !== 'object' || filterArray[i] === null) {
+      filterArray[i] = {};
+    }
+  }
+
+  if(!filterArray.length) {
+    filterArray = [{}];
+  }
+
   var data = this._data.slice();
-  var keys = Object.keys(filters);
-  var key;
+  var filters, keys, key, filterData, filter, filterType;
+  var filterArrayLength = filterArray.length;
+  var f, i, j, k;
 
-  var filterData = [];
-  var filter;
-  var filterType;
+  for(f = 0; f !== filterArrayLength; f++) {
 
-  for(var i = 0, len = keys.length; i < len; i++) {
-    key = keys[i];
-    filter = key.split('__');
-    if(filter.length < 2) {
-      filter.push('is');
+    filters = filterArray[f];
+    keys = Object.keys(filters);
+
+    filterData = [];
+
+    for(i = 0, len = keys.length; i < len; i++) {
+      key = keys[i];
+      filter = key.split('__');
+      if(filter.length < 2) {
+        filter.push('is');
+      }
+      filterType = filter.pop();
+      filter = filter.join('__');
+
+      if(!this.__compare[filterType]) {
+        throw new Error('Filter type "' + filterType + '" not supported.');
+      }
+      filterData.push([this.__compare[filterType], filter, filters[key]]);
     }
-    filterType = filter.pop();
-    filter = filter.join('__');
 
-    if(!this.__compare[filterType]) {
-      throw new Error('Filter type "' + filterType + '" not supported.');
-    }
-    filterData.push([this.__compare[filterType], filter, filters[key]]);
+    filterArray[f] = filterData;
+
   }
 
   var tmpFilter;
-  var i, compareFn, key, val;
+  var compareFn, key, val, datum;
 
-  var filterLength = filterData.length;
-  var filterMax = filterLength - 1; // Caching purposes
+  var filterData;
+  var filterLength;
   var len = data.length;
 
-  for(var j = 0; j !== filterLength; j++) {
-    tmpFilter = filterData[j];
-    compareFn = tmpFilter[0];
-    key = tmpFilter[1];
-    val = tmpFilter[2];
-    i = len;
-    while(i--) { data[i] && (compareFn(data[i][key], val) === exclude) && (data[i] = null); }
+  var excludeCurrent;
+  var n = 0;
+  var tmp = Array(len);
+
+  for(i = 0; i !== len; i++) {
+
+    datum = data[i];
+    excludeCurrent = true;
+
+    for(j = 0; j !== filterArrayLength && excludeCurrent; j++) {
+
+      excludeCurrent = false;
+      filterData = filterArray[j];
+      filterLength = filterData.length;
+
+      for(k = 0; k !== filterLength && !excludeCurrent; k++) {
+
+        tmpFilter = filterData[k];
+        compareFn = tmpFilter[0];
+        key = tmpFilter[1];
+        val = tmpFilter[2];
+        (compareFn(datum[key], val) === exclude) && (excludeCurrent = true);
+
+      }
+
+      !excludeCurrent && (tmp[n++] = datum);
+
+    }
+
   }
 
-  var tmp = [];
-  var count = 0;
-  for(var i = 0; i !== len; i++) { data[i] && (tmp[count++] = data[i]); }
+  tmp = tmp.slice(0, n);
 
   return new DataCollectionQuery(this.__parent, tmp);
 
 };
 
 DataCollectionQuery.prototype.filter = function(filters) {
-  return this.__filter(filters, false);
+  var filterArray = [].slice.call(arguments);
+  return this.__filter(filterArray, false);
 };
 
 DataCollectionQuery.prototype.exclude = function(filters) {
-  return this.__filter(filters, true);
+  var filterArray = [].slice.call(arguments);
+  return this.__filter(filterArray, true);
 };
 
 DataCollectionQuery.prototype.spawn = function(ignoreIndex) {
