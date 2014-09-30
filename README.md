@@ -1,4 +1,4 @@
-# DataCollection.js !['coverage'](http://img.shields.io/badge/coverage-95.5%25-brightgreen.svg)
+# DataCollection.js !['coverage'](http://img.shields.io/badge/coverage-100%25-brightgreen.svg)
 
 Manipulate data from API responses with ease.
 
@@ -19,13 +19,13 @@ You can begin using DataCollection.js by embedding the following script (assumes
 ### Web
 
 ```html
-<script src="/data_collection.js"></script>
+<script src="/data_collection-1.1.0.js"></script>
 ```
 
 Alternatively, the minified version can be found at
 
 ```html
-<script src="/data_collection-min.js"></script>
+<script src="/data_collection-1.1.0-min.js"></script>
 ```
 
 You can then start using `DataCollection` objects with
@@ -361,12 +361,15 @@ DataCollectionQuery()
 
 ##### DataCollectionQuery.prototype.filter
 ```
-filter( [Object] filters )
+filter( [Object] filters_1, ..., [Object] filters_n )
   returns new DataCollectionQuery
 ```
 
   Returns a new `DataCollectionQuery` containing a referential subset of its
-  parent. *Contains* filtered values (see: **Filters**)
+  parent. *Contains* filtered values (see: **Filters**).
+
+  Providing new filter objects via separate arguments does a logical OR between
+  the filter sets. (Within a filter set is logical AND.)
 
 ---
 

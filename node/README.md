@@ -1,4 +1,4 @@
-# DataCollection !['coverage'](http://img.shields.io/badge/coverage-95.5%25-brightgreen.svg)
+# DataCollection !['coverage'](http://img.shields.io/badge/coverage-100%25-brightgreen.svg)
 
 To install simply use
 
