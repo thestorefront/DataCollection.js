@@ -451,8 +451,8 @@ sort( [String] key, [Optional Boolean] sortDesc = false )
   Returns a new DataCollectionQuery containing the parent's rows, sorted
   by a specific key (descending if sortDesc = true).
 
-  Sort order is as follows:
-  null, NaN, Number, Infinity, Boolean, String, Object
+  Sort order is as follows (ASC):
+  undefined, null, NaN, -Infinity, Number, Infinity, Boolean, String, Object, Function
 
 ---
 
@@ -659,7 +659,7 @@ strings or arrays.
 
 # Tests and Benchmarks
 
-Current test coverage is **95.5%**
+Current test coverage is **100%**
 
 Included with this repository are tests (in `/tests`) to make sure everything
 is running as expected.
