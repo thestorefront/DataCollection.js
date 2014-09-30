@@ -93,6 +93,8 @@
 
       }
 
+      n = i;
+
     } else {
 
       for(var i = 0, len = data.length; i < len; i++) {
@@ -119,9 +121,9 @@
 
       }
 
-      newData = newData.slice(0, n);
-
     }
+
+    newData = newData.slice(0, n);
 
     return newData;
 
