@@ -89,11 +89,9 @@
           newRow[mapKey] = mapFuncs[mapKey].call(this, newRow);
         }
 
-        newData[i] = newRow;
+        newData[n++] = newRow;
 
       }
-
-      n = i;
 
     } else {
 

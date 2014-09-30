@@ -19,13 +19,13 @@ You can begin using DataCollection.js by embedding the following script (assumes
 ### Web
 
 ```html
-<script src="/data_collection-1.1.1.js"></script>
+<script src="/data_collection-1.1.3.js"></script>
 ```
 
 Alternatively, the minified version can be found at
 
 ```html
-<script src="/data_collection-1.1.1-min.js"></script>
+<script src="/data_collection-1.1.3-min.js"></script>
 ```
 
 You can then start using `DataCollection` objects with

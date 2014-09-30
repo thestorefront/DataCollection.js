@@ -89,11 +89,9 @@ DataCollection.prototype.__prepare__ = function(data) {
         newRow[mapKey] = mapFuncs[mapKey].call(this, newRow);
       }
 
-      newData[i] = newRow;
+      newData[n++] = newRow;
 
     }
-
-    n = i;
 
   } else {
 
