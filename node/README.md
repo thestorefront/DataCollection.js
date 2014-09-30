@@ -22,7 +22,9 @@ Run tests with
 $ npm test
 ```
 
-If you don't see any errors, you're good to go!
+in the ```node``` directory.
+
+Voila, 100% coverage. :)
 
 # Docs
 

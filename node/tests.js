@@ -7,7 +7,7 @@ var characters = [
     last_name: 'Stark',
     gender: 'm',
     age: 35,
-    location: 'Winterfell'
+    location: 'Winterfell',
   },
   {
     id: 2,
@@ -112,6 +112,12 @@ console.assert((function() {
 })(), 'As expected, failed (error) to destroy already destroyed row');
 
 console.assert(dc.__find__(destroyedRow) === -1, 'Could not find destroyed row');
+
+dc.removeIndex();
+
+console.assert(dc.__index === null, 'Index removed properly');
+
+dc.defineIndex('id');
 
 dc.load();
 
@@ -458,5 +464,67 @@ dcSpawn2.createMapping('is_bastard', function(row) { return row['last_name'] ===
 dcSpawn2.insert(newRow);
 
 console.assert(dcSpawn2.query().filter({first_name: 'Rob'}).first().is_bastard === false, 'Create mapping works without index');
+
+var testSort = [
+  {a: undefined, b: NaN},
+  {a: null, b: 1E100},
+  {a: NaN, b: {t: -1}},
+  {a: -Infinity, b: 'xyz'},
+  {a: -1E100, b: null},
+  {a: -1, b: -1},
+  {a: 0, b: Infinity},
+  {a: 1, b: 'abc'},
+  {a: 1E100, b: false},
+  {a: Infinity, b: {t: 1}},
+  {a: false, b: -Infinity},
+  {a: true, b: undefined},
+  {a: 'abc', b: function() {}},
+  {a: 'xyz', b: true},
+  {a: {t: -1}, b: 1},
+  {a: {t: 1}, b: -1E100},
+  {a: function() {}, b: 0}
+];
+
+var dc3 = new DataCollection();
+dc3.load(testSort);
+
+console.assert((function() {
+
+  var order = [
+    undefined, null, NaN, -Infinity, -1E100, -1, 0, 1, 1E100, Infinity, false, true, 'abc', 'xyz', {t: -1}, {t: 1}, function() {}
+  ];
+
+  var test = dc3.query().sort('b').values();
+
+  var c1, c2, keys1, keys2;
+
+  for(var i = 0, len = order.length; i < len; i++) {
+    c1 = order[i];
+    c2 = test[i]['b'];
+    if(c1 === c2) { continue; }
+    if(typeof(c1) === 'number' && typeof(c2) === 'number') {
+      if(isNaN(c1) && isNaN(c2)) { continue; }
+    }
+    if(typeof(c1) === 'object' && typeof(c2) === 'object') {
+      keys1 = Object.keys(c1);
+      keys2 = Object.keys(c2);
+      if(keys1.length === keys2.length) {
+        for(var j = 0, jlen = keys1.length; j < jlen; j++) {
+          if(!c2.hasOwnProperty(keys1[j])) { return false; }
+          if(c1[keys1[j]] === c2[keys1[j]]) { continue; }
+          return false;
+        }
+        continue;
+      }
+    }
+    if(typeof(c1) === 'function' && typeof(c2) === 'function') {
+      continue;
+    }
+    return false;
+  }
+
+  return true;
+
+})(), 'Sort orders correctly with all expected values');
 
 console.log('Passed ' + passed + ' of ' + count + ' tests. (' + Math.round((passed/count) * 100) + '%)');

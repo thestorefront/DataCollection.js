@@ -46,6 +46,7 @@
 
     var newData = Array(data.length);
     var n = 0;
+    var row;
     var keys = [];
     var key;
     var keyLength;
@@ -69,9 +70,12 @@
     if(!index) {
 
       for(var i = 0, len = data.length; i < len; i++) {
-        var row = data[i];
+        row = data[i];
         if(!row || typeof row !== 'object') { continue; }
         var newRow = Object.defineProperty(Object.create(null), '__uniqid__', {value: this.__uniqid__()});
+
+        keys = Object.keys(row);
+        keyLength = keys.length;
 
         /* Fill keys */
         for(var j = 0; j < keyLength; j++) {
@@ -92,9 +96,12 @@
     } else {
 
       for(var i = 0, len = data.length; i < len; i++) {
-        var row = data[i];
+        row = data[i];
         if(!row || typeof row !== 'object') { continue; }
         var newRow = indexedRows[row[index]] || (newData[n++] = Object.defineProperty(Object.create(null), '__uniqid__', {value: this.__uniqid__()}));
+
+        keys = Object.keys(row);
+        keyLength = keys.length;
 
         /* Fill keys */
         for(var j = 0; j < keyLength; j++) {
@@ -139,6 +146,13 @@
     this.__indexedRows = indexedRows;
 
     return this;
+
+  };
+
+  DataCollection.prototype.removeIndex = function() {
+
+    this.__index = null;
+    this.__indexedRows = Object.create(null);
 
   };
 
@@ -492,36 +506,40 @@
       'b',
       [
         'var val = ' + (sortDesc ? -1 : 1) + ';',
-        'if(a[\'' + key + '\'] === b[\'' + key + '\']) { return 0; }',
+        'if(a[\'' + key + '\'] === b[\'' + key + '\']) { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
+        'if(a[\'' + key + '\'] === undefined) { return -(val); }',
+        'if(b[\'' + key + '\'] === undefined) { return (val); }',
         'if(a[\'' + key + '\'] === null) { return -(val); }',
         'if(b[\'' + key + '\'] === null) { return (val); }',
         'if(typeof a[\'' + key + '\'] === \'number\') {',
         '  if(typeof b[\'' + key + '\'] === \'number\') {',
-        '    if(isNaN(a[\'' + key + '\']) && isNaN(b[\'' + key + '\'])) { return 0; }',
+        '    if(isNaN(a[\'' + key + '\']) && isNaN(b[\'' + key + '\'])) { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
         '    if(isNaN(b[\'' + key + '\'])) { return (val); }',
         '    return a[\'' + key + '\'] > b[\'' + key + '\'] ? (val) : -(val);',
         '  }',
-        '  if(typeof b[\'' + key + '\'] === \'boolean\') { return -(val); }',
-        '  if(typeof b[\'' + key + '\'] === \'string\') { return -(val); }',
-        '  if(typeof b[\'' + key + '\'] === \'object\') { return -(val); }',
+        '  return -(val);',
         '}',
         'if(typeof a[\'' + key + '\'] === \'boolean\') {',
         '  if(typeof b[\'' + key + '\'] === \'number\') { return (val); }',
         '  if(typeof b[\'' + key + '\'] === \'boolean\') { return a[\'' + key + '\'] > b[\'' + key + '\'] ? (val) : -(val); }',
-        '  if(typeof b[\'' + key + '\'] === \'string\') { return -(val); }',
-        '  if(typeof b[\'' + key + '\'] === \'object\') { return -(val); }',
+        '  return -(val);',
         '}',
         'if(typeof a[\'' + key + '\'] === \'string\') {',
-        '  if(typeof b[\'' + key + '\'] === \'number\') { return (val); }',
-        '  if(typeof b[\'' + key + '\'] === \'boolean\') { return (val); }',
         '  if(typeof b[\'' + key + '\'] === \'string\') { return a[\'' + key + '\'] > b[\'' + key + '\'] ? (val) : -(val); }',
         '  if(typeof b[\'' + key + '\'] === \'object\') { return -(val); }',
-        '}',
-        'if(typeof a[\'' + key + '\'] === \'object\') {',
-        '  if(typeof b[\'' + key + '\'] === \'object\') { return 0; }',
+        '  if(typeof b[\'' + key + '\'] === \'function\') { return -(val); }',
         '  return (val);',
         '}',
-        'return 0;'
+        'if(typeof a[\'' + key + '\'] === \'object\') {',
+        '  if(typeof b[\'' + key + '\'] === \'object\') { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
+        '  if(typeof b[\'' + key + '\'] === \'function\') { return -(val); }',
+        '  return (val);',
+        '}',
+        'if(typeof a[\'' + key + '\'] === \'function\') {',,
+        '  if(typeof b[\'' + key + '\'] === \'function\') { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
+        '  return (val);',
+        '}',
+        'return a.__uniqid__ > b.__uniqid__ ? (val) : -(val);'
       ].join('\n')
     );
 

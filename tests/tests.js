@@ -15,7 +15,7 @@
           last_name: 'Stark',
           gender: 'm',
           age: 35,
-          location: 'Winterfell'
+          location: 'Winterfell',
         },
         {
           id: 2,
@@ -110,6 +110,12 @@
       })(), 'As expected, failed (error) to destroy already destroyed row');
 
       assert.ok(dc.__find__(destroyedRow) === -1, 'Could not find destroyed row');
+
+      dc.removeIndex();
+
+      assert.ok(dc.__index === null, 'Index removed properly');
+
+      dc.defineIndex('id');
 
       dc.load();
 
@@ -457,6 +463,68 @@
 
       assert.ok(dcSpawn2.query().filter({first_name: 'Rob'}).first().is_bastard === false, 'Create mapping works without index');
 
+      var testSort = [
+        {a: undefined, b: NaN},
+        {a: null, b: 1E100},
+        {a: NaN, b: {t: -1}},
+        {a: -Infinity, b: 'xyz'},
+        {a: -1E100, b: null},
+        {a: -1, b: -1},
+        {a: 0, b: Infinity},
+        {a: 1, b: 'abc'},
+        {a: 1E100, b: false},
+        {a: Infinity, b: {t: 1}},
+        {a: false, b: -Infinity},
+        {a: true, b: undefined},
+        {a: 'abc', b: function() {}},
+        {a: 'xyz', b: true},
+        {a: {t: -1}, b: 1},
+        {a: {t: 1}, b: -1E100},
+        {a: function() {}, b: 0}
+      ];
+
+      var dc3 = new DataCollection();
+      dc3.load(testSort);
+
+      assert.ok((function() {
+
+        var order = [
+          undefined, null, NaN, -Infinity, -1E100, -1, 0, 1, 1E100, Infinity, false, true, 'abc', 'xyz', {t: -1}, {t: 1}, function() {}
+        ];
+
+        var test = dc3.query().sort('b').values();
+
+        var c1, c2, keys1, keys2;
+
+        for(var i = 0, len = order.length; i < len; i++) {
+          c1 = order[i];
+          c2 = test[i]['b'];
+          if(c1 === c2) { continue; }
+          if(typeof(c1) === 'number' && typeof(c2) === 'number') {
+            if(isNaN(c1) && isNaN(c2)) { continue; }
+          }
+          if(typeof(c1) === 'object' && typeof(c2) === 'object') {
+            keys1 = Object.keys(c1);
+            keys2 = Object.keys(c2);
+            if(keys1.length === keys2.length) {
+              for(var j = 0, jlen = keys1.length; j < jlen; j++) {
+                if(!c2.hasOwnProperty(keys1[j])) { return false; }
+                if(c1[keys1[j]] === c2[keys1[j]]) { continue; }
+                return false;
+              }
+              continue;
+            }
+          }
+          if(typeof(c1) === 'function' && typeof(c2) === 'function') {
+            continue;
+          }
+          return false;
+        }
+
+        return true;
+
+      })(), 'Sort orders correctly with all expected values');
+
     });
 
     var rows = 100000;
@@ -520,35 +588,40 @@
     while(i--) {
       var d = data.slice();
       console.time('sort native');
+      var key = 'a';
       d.sort(function(a, b) {
         var val = 1;
-        if(a.a === b.a) { return 0; }
-        if(a.a === null) { return -(val); }
-        if(b.a === null) { return (val); }
-        if(typeof a.a === 'number') {
-          if(typeof b.a === 'number') {
-            if(isNaN(a.a) && isNaN(b.a)) { return 0; }
-            if(isNaN(b.a)) { return (val); }
-            return a.a > b.a ? (val) : -(val);
+        if(a[key] === b[key]) { return 0; }
+        if(a[key] === undefined) { return -(val); }
+        if(b[key] === undefined) { return (val); }
+        if(a[key] === null) { return -(val); }
+        if(b[key] === null) { return (val); }
+        if(typeof a[key] === 'number') {
+          if(typeof b[key] === 'number') {
+            if(isNaN(a[key]) && isNaN(b[key])) { return 0; }
+            if(isNaN(b[key])) { return (val); }
+            return a[key] > b[key] ? (val) : -(val);
           }
-          if(typeof b.a === 'boolean') { return -(val); }
-          if(typeof b.a === 'string') { return -(val); }
-          if(typeof b.a === 'object') { return -(val); }
+          return -(val);
         }
-        if(typeof a.a === 'boolean') {
-          if(typeof b.a === 'number') { return (val); }
-          if(typeof b.a === 'boolean') { return a.a > b.a ? (val) : -(val); }
-          if(typeof b.a === 'string') { return -(val); }
-          if(typeof b.a === 'object') { return -(val); }
+        if(typeof a[key] === 'boolean') {
+          if(typeof b[key] === 'number') { return (val); }
+          if(typeof b[key] === 'boolean') { return a[key] > b[key] ? (val) : -(val); }
+          return -(val);
         }
-        if(typeof a.a === 'string') {
-          if(typeof b.a === 'number') { return (val); }
-          if(typeof b.a === 'boolean') { return (val); }
-          if(typeof b.a === 'string') { return a.a > b.a ? (val) : -(val); }
-          if(typeof b.a === 'object') { return -(val); }
+        if(typeof a[key] === 'string') {
+          if(typeof b[key] === 'string') { return a[key] > b[key] ? (val) : -(val); }
+          if(typeof b[key] === 'object') { return -(val); }
+          if(typeof b[key] === 'function') { return -(val); }
+          return (val);
         }
-        if(typeof a.a === 'object') {
-          if(typeof b.a === 'object') { return 0; }
+        if(typeof a[key] === 'object') {
+          if(typeof b[key] === 'object') { return 0; }
+          if(typeof b[key] === 'function') { return -(val); }
+          return (val);
+        }
+        if(typeof a[key] === 'function') {
+          if(typeof b[key] === 'function') { return 0; }
           return (val);
         }
         return 0;
