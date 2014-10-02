@@ -19,13 +19,13 @@ You can begin using DataCollection.js by embedding the following script (assumes
 ### Web
 
 ```html
-<script src="/data_collection-1.1.3.js"></script>
+<script src="/data_collection-1.1.4.js"></script>
 ```
 
 Alternatively, the minified version can be found at
 
 ```html
-<script src="/data_collection-1.1.3-min.js"></script>
+<script src="/data_collection-1.1.4-min.js"></script>
 ```
 
 You can then start using `DataCollection` objects with
@@ -453,6 +453,20 @@ sort( [String] key, [Optional Boolean] sortDesc = false )
 
   Sort order is as follows (ASC):
   undefined, null, NaN, -Infinity, Number, Infinity, Boolean, String, Object, Function
+
+---
+
+##### DataCollectionQuery.prototype.sequence
+```
+sequence( [String or Number] indexedValue_1, ..., [String or Number] indexedValue_n )
+sequence( [Array] indexedValues )
+  returns DataCollectionQuery
+```
+
+  Returns a new DataCollectionQuery containing the parent's rows with specified
+  indices, ordered in the sequence provided.
+
+  Can accept indices as arguments or in an Array.
 
 ---
 

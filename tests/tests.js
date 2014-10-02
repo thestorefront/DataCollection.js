@@ -2,10 +2,6 @@
 
   window.addEventListener('DOMContentLoaded', function() {
 
-    // console.time('tests');
-    // console.log('Running tests...');
-    // var passed = 0;
-
     QUnit.test('DataCollection Works', function(assert) {
 
       var characters = [
@@ -115,6 +111,15 @@
 
       assert.ok(dc.__index === null, 'Index removed properly');
 
+      assert.ok((function() {
+        try {
+          dc.query().sequence(1, 5);
+        } catch(e) {
+          return true;
+        }
+        return false;
+      })(), '.sequence gives error when not indexed');
+
       dc.defineIndex('id');
 
       dc.load();
@@ -198,6 +203,40 @@
         }
         return true;
       })(), 'Mapping created successfully');
+
+      assert.ok((function() {
+
+        var seq = dc.query().sequence(5, 2, 3).values();
+        var expect = [dc.fetch(5), dc.fetch(2), dc.fetch(3)];
+
+        if(seq.length !== expect.length) { return false; }
+
+        for(var i = 0, len = seq.length; i < len; i++) {
+          if(seq[i] !== expect[i]) {
+            return false;
+          }
+        }
+
+        return true;
+
+      })(), '.sequence gets correct values with argument overloading');
+
+      assert.ok((function() {
+
+        var seq = dc.query().sequence([5, 2, 3]).values();
+        var expect = [dc.fetch(5), dc.fetch(2), dc.fetch(3)];
+
+        if(seq.length !== expect.length) { return false; }
+
+        for(var i = 0, len = seq.length; i < len; i++) {
+          if(seq[i] !== expect[i]) {
+            return false;
+          }
+        }
+
+        return true;
+
+      })(), '.sequence gets correct values with array of values');
 
       var newRow = {
         id: 6,

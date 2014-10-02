@@ -274,7 +274,6 @@
 
     this.__indexedRows = Object.create(null);
     this.__uniqid = 0;
-
     this._data = this.__prepare__(data);
     this.__increment__();
 
@@ -285,7 +284,9 @@
   DataCollection.prototype.truncate = function(data) {
 
     this.__indexedRows = Object.create(null);
+    this.__uniqid = 0;
     this._data = [];
+    this.__increment__();
 
     return true;
 
@@ -698,6 +699,36 @@
     }
 
     return Object.keys(values);
+
+  };
+
+  DataCollectionQuery.prototype.sequence = function(values) {
+
+    this.__validate__();
+
+    var dc = this.__parent;
+
+    if(!dc.__index) {
+      throw new Error('Can only use .sequence with an indexed DataCollection');
+    }
+
+    if(!(values instanceof Array)) {
+      values = [].slice.call(arguments);
+    }
+
+    var tmp = [];
+    var val;
+    var indexedRows = dc.__indexedRows;
+
+    for(var i = 0, len = values.length; i < len; i++) {
+
+      val = values[i];
+
+      indexedRows[val] && tmp.push(indexedRows[val]);
+
+    }
+
+    return new DataCollectionQuery(this.__parent, tmp);
 
   };
 
