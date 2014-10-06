@@ -19,13 +19,13 @@ You can begin using DataCollection.js by embedding the following script (assumes
 ### Web
 
 ```html
-<script src="/data_collection-1.1.4.js"></script>
+<script src="/data_collection-1.1.5.js"></script>
 ```
 
 Alternatively, the minified version can be found at
 
 ```html
-<script src="/data_collection-1.1.4-min.js"></script>
+<script src="/data_collection-1.1.5-min.js"></script>
 ```
 
 You can then start using `DataCollection` objects with
@@ -442,17 +442,31 @@ remove()
 
 ---
 
-##### DataCollectionQuery.prototype.sort
+##### DataCollectionQuery.prototype.order
 ```
-sort( [String] key, [Optional Boolean] sortDesc = false )
+order( [String] key, [Optional Boolean] orderDesc = false )
   returns DataCollectionQuery
 ```
 
   Returns a new DataCollectionQuery containing the parent's rows, sorted
   by a specific key (descending if sortDesc = true).
 
-  Sort order is as follows (ASC):
-  undefined, null, NaN, -Infinity, Number, Infinity, Boolean, String, Object, Function
+  Sort order is as follows (regardless of ASC or DESC):
+  Function, Object, Date Object, String, Boolean, Number, NaN, null, undefined
+
+  Strings, Booleans, and Numbers will be sorted based on their values (ASC/DESC)
+  Functions, Objects and identical values will be sorted based on the order in
+  which they were inserted (stable sort).
+
+---
+
+##### DataCollectionQuery.prototype.sort
+```
+sort( [String] key, [Optional Boolean] orderDesc = false )
+  returns DataCollectionQuery
+```
+
+  Alias of ```.order```
 
 ---
 

@@ -517,10 +517,12 @@ var testSort = [
   {a: -1, b: -1},
   {a: 0, b: Infinity},
   {a: 1, b: 'abc'},
+  {a: new Date(1337), b: new Date(666)},
   {a: 1E100, b: false},
   {a: Infinity, b: {t: 1}},
   {a: false, b: -Infinity},
   {a: true, b: undefined},
+  {a: new Date(666), b: new Date(1337)},
   {a: 'abc', b: function() {}},
   {a: 'xyz', b: true},
   {a: {t: -1}, b: 1},
@@ -534,21 +536,28 @@ dc3.load(testSort);
 console.assert((function() {
 
   var order = [
-    undefined, null, NaN, -Infinity, -1E100, -1, 0, 1, 1E100, Infinity, false, true, 'abc', 'xyz', {t: -1}, {t: 1}, function() {}
+    function() {}, {t: -1}, {t: 1}, new Date(666), new Date(1337), 'abc', 'xyz', false, true, -Infinity, -1E100, -1, 0, 1, 1E100, Infinity, NaN, null, undefined
   ];
 
-  var test = dc3.query().sort('b').values();
+  var test = dc3.query().sort('b').values('b');
 
   var c1, c2, keys1, keys2;
 
   for(var i = 0, len = order.length; i < len; i++) {
     c1 = order[i];
-    c2 = test[i]['b'];
+    c2 = test[i];
     if(c1 === c2) { continue; }
     if(typeof(c1) === 'number' && typeof(c2) === 'number') {
       if(isNaN(c1) && isNaN(c2)) { continue; }
     }
     if(typeof(c1) === 'object' && typeof(c2) === 'object') {
+      if(c1 instanceof Date) {
+        if(c2 instanceof Date) {
+          if(c1.valueOf() === c2.valueOf()) { continue; }
+          return false;
+        }
+        return false;
+      }
       keys1 = Object.keys(c1);
       keys2 = Object.keys(c2);
       if(keys1.length === keys2.length) {
@@ -568,6 +577,211 @@ console.assert((function() {
 
   return true;
 
-})(), 'Sort orders correctly with all expected values');
+})(), 'Sort orders correctly with all expected values (ASC)');
+
+console.assert((function() {
+
+  var order = [
+    function() {}, {t: 1}, {t: -1}, new Date(1337), new Date(666), 'xyz', 'abc', true, false, Infinity, 1E100, 1, 0, -1, -1E100, -Infinity, NaN, null, undefined
+  ];
+
+  var test = dc3.query().sort('b', true).values('b');
+
+  var c1, c2, keys1, keys2;
+
+  for(var i = 0, len = order.length; i < len; i++) {
+    c1 = order[i];
+    c2 = test[i];
+    if(c1 === c2) { continue; }
+    if(typeof(c1) === 'number' && typeof(c2) === 'number') {
+      if(isNaN(c1) && isNaN(c2)) { continue; }
+    }
+    if(typeof(c1) === 'object' && typeof(c2) === 'object') {
+      if(c1 instanceof Date) {
+        if(c2 instanceof Date) {
+          if(c1.valueOf() === c2.valueOf()) { continue; }
+          return false;
+        }
+        return false;
+      }
+      keys1 = Object.keys(c1);
+      keys2 = Object.keys(c2);
+      if(keys1.length === keys2.length) {
+        for(var j = 0, jlen = keys1.length; j < jlen; j++) {
+          if(!c2.hasOwnProperty(keys1[j])) { return false; }
+          if(c1[keys1[j]] === c2[keys1[j]]) { continue; }
+          return false;
+        }
+        continue;
+      }
+    }
+    if(typeof(c1) === 'function' && typeof(c2) === 'function') {
+      continue;
+    }
+    return false;
+  }
+
+  return true;
+
+})(), 'Sort orders correctly with all expected values (DESC)');
+
+var dc4 = new DataCollection();
+
+dc4.load([
+  {
+    a: {b: {c: 0}},
+  },
+  {
+    a: {b: {c: 1}},
+  },
+  {
+    a: {b: {c: 9}},
+  },
+  {
+    a: {b: {c: -2}},
+  },
+  {
+    a: {b: {c: 5}},
+  }
+]);
+
+console.assert((function() {
+
+  var vals = dc4.query().filter({'a__b__c__gte': 5}).values();
+  var compare = [9, 5];
+
+  for(var i = 0; i < compare.length; i++) {
+    if(compare[i] !== vals[i].a.b.c) {
+      return false;
+    }
+  }
+
+  return true;
+
+})(), 'Filter by nested field successful');
+
+console.assert((function() {
+
+  try {
+    var vals = dc4.query().filter({'a__d__b__gte': 5});
+  } catch(e) {
+    return true;
+  }
+
+  return false;
+
+})(), 'Filter throws error when related field does not exist');
+
+console.assert((function() {
+
+  var vals = dc4.query().filter({'a__b__c__lte': 5}).sort('a__b__c').values();
+  var compare = [-2, 0, 1, 5];
+
+  for(var i = 0; i < compare.length; i++) {
+    if(compare[i] !== vals[i].a.b.c) {
+      return false;
+    }
+  }
+
+  return true;
+
+})(), 'Sort by nested field successful');
+
+console.assert((function() {
+
+  try {
+    var vals = dc4.query().sort('a__d__b');
+  } catch(e) {
+    return true;
+  }
+
+  return false;
+
+})(), 'Sort throws error when nested field does not exist');
+
+var dc5 = new DataCollection();
+
+dc5.load([
+  {a: '5'},
+  {a: {}},
+  {a: function() {}},
+  {a: true},
+  {a: false},
+  {a: true},
+  {a: 5},
+  {a: '5'},
+  {a: true},
+  {a: '25'},
+  {a: 25},
+  {a: '25'},
+  {a: 5},
+  {a: null},
+  {a: 'null'},
+  {a: undefined},
+  {a: undefined},
+  {a: 'undefined'},
+  {a: true},
+  {a: 'null'},
+  {a: NaN},
+  {a: 'NaN'},
+  {a: NaN}
+]);
+
+console.assert((function() {
+
+  var test = [
+    {},
+    function() {},
+    true,
+    false,
+    5,
+    25,
+    '5',
+    '25',
+    null,
+    'null',
+    undefined,
+    'undefined',
+    NaN,
+    'NaN'
+  ];
+
+  var distinct = dc5.query().distinct('a');
+  var val;
+  var index;
+
+  if(test.length !== distinct.length) {
+    return false;
+  }
+
+  for(var i = 0, len = distinct.length; i < len; i++) {
+    val = distinct[i];
+    if(val !== val) {
+      index = -1;
+      for(var j = 0; j < test.length; j++) {
+        if(test[j] !== test[j]) {
+          index = j;
+          break;
+        }
+      }
+    } else if(val !== null && (typeof val === 'object' || typeof val === 'function')) {
+      index = -1;
+      for(var j = 0; j < test.length; j++) {
+        if(typeof val === typeof test[j]) {
+          index = j;
+          break;
+        }
+      }
+    } else {
+      index = test.indexOf(val);
+    }
+    if(index > -1) {
+      test.splice(index, 1);
+    }
+  }
+
+  return !test.length;
+
+})(), 'Got distinct values (varying types) correctly');
 
 console.log('Passed ' + passed + ' of ' + count + ' tests. (' + Math.round((passed/count) * 100) + '%)');

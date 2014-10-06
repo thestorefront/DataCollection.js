@@ -370,7 +370,6 @@
           filter.push('is');
         }
         filterType = filter.pop();
-        filter = filter.join('__');
 
         if(!this.__compare[filterType]) {
           throw new Error('Filter type "' + filterType + '" not supported.');
@@ -393,30 +392,45 @@
     var n = 0;
     var tmp = Array(len);
 
-    for(i = 0; i !== len; i++) {
+    var flen = 0;
+    var d;
 
-      datum = data[i];
-      excludeCurrent = true;
+    try {
 
-      for(j = 0; j !== filterArrayLength && excludeCurrent; j++) {
+      for(i = 0; i !== len; i++) {
 
-        excludeCurrent = false;
-        filterData = filterArray[j];
-        filterLength = filterData.length;
+        datum = data[i];
+        excludeCurrent = true;
 
-        for(k = 0; k !== filterLength && !excludeCurrent; k++) {
+        for(j = 0; j !== filterArrayLength && excludeCurrent; j++) {
 
-          tmpFilter = filterData[k];
-          compareFn = tmpFilter[0];
-          key = tmpFilter[1];
-          val = tmpFilter[2];
-          (compareFn(datum[key], val) === exclude) && (excludeCurrent = true);
+          excludeCurrent = false;
+          filterData = filterArray[j];
+          filterLength = filterData.length;
+
+          for(k = 0; k !== filterLength && !excludeCurrent; k++) {
+
+            tmpFilter = filterData[k];
+            compareFn = tmpFilter[0];
+            d = datum;
+            key = tmpFilter[1];
+            for(f = 0, flen = key.length; f !== flen; f++) {
+              d = d[key[f]];
+            }
+            val = tmpFilter[2];
+            (compareFn(d, val) === exclude) && (excludeCurrent = true);
+
+          }
+
+          !excludeCurrent && (tmp[n++] = datum);
 
         }
 
-        !excludeCurrent && (tmp[n++] = datum);
-
       }
+
+    } catch(e) {
+
+      throw new Error('Nested field ' + key.join('__') + ' does not exist');
 
     }
 
@@ -494,61 +508,78 @@
     return this.__parent.__remove__(this.count());
   };
 
-  DataCollectionQuery.prototype.sort = function(key, sortDesc) {
+  DataCollectionQuery.prototype.order = function(key, orderDesc) {
 
     this.__validate__();
 
-    key = (key + '').replace(/[^A-Za-z0-9]/gi, '_');
+    key = (key + '').replace(/[^A-Za-z0-9-_]/gi, '?');
+    var originalKey = key;
 
-    sortDesc = !!sortDesc;
+    key = '[\'' + key.split('__').join('\'][\'') + '\']';
+
+    orderDesc = !!orderDesc;
 
     var sortFn = new Function(
       'a',
       'b',
       [
-        'var val = ' + (sortDesc ? -1 : 1) + ';',
-        'if(a[\'' + key + '\'] === b[\'' + key + '\']) { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
-        'if(a[\'' + key + '\'] === undefined) { return -(val); }',
-        'if(b[\'' + key + '\'] === undefined) { return (val); }',
-        'if(a[\'' + key + '\'] === null) { return -(val); }',
-        'if(b[\'' + key + '\'] === null) { return (val); }',
-        'if(typeof a[\'' + key + '\'] === \'number\') {',
-        '  if(typeof b[\'' + key + '\'] === \'number\') {',
-        '    if(isNaN(a[\'' + key + '\']) && isNaN(b[\'' + key + '\'])) { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
-        '    if(isNaN(b[\'' + key + '\'])) { return (val); }',
-        '    return a[\'' + key + '\'] > b[\'' + key + '\'] ? (val) : -(val);',
+        'var val = ' + (orderDesc ? -1 : 1) + ';',
+        'if(a' + key + ' === b' + key + ') { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
+        'if(a' + key + ' === undefined) { return 1; }',
+        'if(b' + key + ' === undefined) { return -1; }',
+        'if(a' + key + ' === null) { return 1; }',
+        'if(b' + key + ' === null) { return -1; }',
+        'if(typeof a' + key + ' === \'function\') {',
+        '  if(typeof b' + key + ' === \'function\') { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
+        '  return -1;',
+        '}',
+        'if(typeof a' + key + ' === \'object\') {',
+        '  if(typeof b' + key + ' === \'function\') { return 1; }',
+        '  if(typeof b' + key + ' === \'object\') {',
+        '    if(a' + key + ' instanceof Date && b' + key + ' instanceof Date) {',
+        '        return a' + key + '.valueOf() > b' + key + '.valueOf() ? (val) : -(val);',
+        '    }',
+        '    if(a' + key + ' instanceof Date) { return 1; }',
+        '    if(b' + key + ' instanceof Date) { return -1; }',
+        '    return a.__uniqid__ > b.__uniqid__ ? (val) : -(val);',
         '  }',
-        '  return -(val);',
+        '  return -1;',
         '}',
-        'if(typeof a[\'' + key + '\'] === \'boolean\') {',
-        '  if(typeof b[\'' + key + '\'] === \'number\') { return (val); }',
-        '  if(typeof b[\'' + key + '\'] === \'boolean\') { return a[\'' + key + '\'] > b[\'' + key + '\'] ? (val) : -(val); }',
-        '  return -(val);',
+        'if(typeof a' + key + ' === \'string\') {',
+        '  if(typeof b' + key + ' === \'function\') { return 1; }',
+        '  if(typeof b' + key + ' === \'object\') { return 1; }',
+        '  if(typeof b' + key + ' === \'string\') { return a' + key + ' > b' + key + ' ? (val) : -(val); }',
+        '  return -1;',
         '}',
-        'if(typeof a[\'' + key + '\'] === \'string\') {',
-        '  if(typeof b[\'' + key + '\'] === \'string\') { return a[\'' + key + '\'] > b[\'' + key + '\'] ? (val) : -(val); }',
-        '  if(typeof b[\'' + key + '\'] === \'object\') { return -(val); }',
-        '  if(typeof b[\'' + key + '\'] === \'function\') { return -(val); }',
-        '  return (val);',
+        'if(typeof a' + key + ' === \'boolean\') {',
+        '  if(typeof b' + key + ' === \'boolean\') { return a' + key + ' > b' + key + ' ? (val) : -(val); }',
+        '  if(typeof b' + key + ' === \'number\') { return -1; }',
+        '  return 1;',
         '}',
-        'if(typeof a[\'' + key + '\'] === \'object\') {',
-        '  if(typeof b[\'' + key + '\'] === \'object\') { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
-        '  if(typeof b[\'' + key + '\'] === \'function\') { return -(val); }',
-        '  return (val);',
-        '}',
-        'if(typeof a[\'' + key + '\'] === \'function\') {',,
-        '  if(typeof b[\'' + key + '\'] === \'function\') { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
-        '  return (val);',
+        'if(typeof a' + key + ' === \'number\') {',
+        '  if(typeof b' + key + ' === \'number\') {',
+        '    if(isNaN(a' + key + ') && isNaN(b' + key + ')) { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
+        '    if(isNaN(a' + key + ')) { return 1; }',
+        '    if(isNaN(b' + key + ')) { return -1; }',
+        '    return a' + key + ' > b' + key + ' ? (val) : -(val);',
+        '  }',
+        '  return 1;',
         '}',
         'return a.__uniqid__ > b.__uniqid__ ? (val) : -(val);'
       ].join('\n')
     );
 
-    var tmp = this._data.slice().sort(sortFn);
+    try {
+      var tmp = this._data.slice().sort(sortFn);
+    } catch(e) {
+      throw new Error('Key ' + originalKey + ' could not be sorted by');
+    }
 
     return new DataCollectionQuery(this.__parent, tmp);
 
   };
+
+  DataCollectionQuery.prototype.sort = DataCollectionQuery.prototype.order;
 
   DataCollectionQuery.prototype.values = function(key) {
 
@@ -687,10 +718,10 @@
 
     if(len) {
 
-      values[data[0][key]] = true;
+      values[data[0][key] + '__' + (typeof data[0][key])] = true;
 
       for(var i = 1; i < len; i++) {
-        value = data[i][key];
+        value = data[i][key] + '__' + (typeof data[i][key]);
         if(!values[value]) {
           values[value] = true;
         }
@@ -698,7 +729,74 @@
 
     }
 
-    return Object.keys(values);
+    var distincts = Object.keys(values);
+    var distinct, type;
+
+    var convert = {
+      'undefined': function(v) {
+        return undefined;
+      },
+      'number': function(v) {
+        return Number(v);
+      },
+      'string': function(v) {
+        return v;
+      },
+      'boolean': function(v) {
+        return {'true': true, 'false': false}[v];
+      },
+      'object': function(v) {
+        if(v === 'null') {
+          return null;
+        } else {
+          return Object.create(null);
+        }
+      },
+      'function': function(v) {
+        return function(){};
+      }
+    };
+
+    for(i = 0, len = distincts.length; i < len; i++) {
+      distinct = distincts[i].split('__');
+      type = distinct.pop();
+      distincts[i] = convert[type](distinct.join('__'));
+    }
+
+    return distincts.sort(function(a, b) {
+      if(a === b) { return 0; }
+      if(a === undefined) { return 1; }
+      if(b === undefined) { return -1; }
+      if(a === null) { return 1; }
+      if(b === null) { return -1; }
+      if(typeof a === 'function') {
+        if(typeof b === 'function') { return 0; }
+        return -1;
+      }
+      if(typeof a === 'object') {
+        if(typeof b === 'function') { return 1; }
+        if(typeof b === 'object') { return 0; }
+        return -1;
+      }
+      if(typeof a === 'string') {
+        if(typeof b === 'function') { return 1; }
+        if(typeof b === 'object') { return 1; }
+        if(typeof b === 'string') { return a > b ? 1 : -1; }
+        return -1;
+      }
+      if(typeof a === 'boolean') {
+        if(typeof b === 'boolean') { return a > b ? 1 : -1; }
+        if(typeof b === 'number') { return -1; }
+        return 1;
+      }
+      if(typeof b === 'number') {
+        if(isNaN(a) && isNaN(b)) { return 0; }
+        if(isNaN(a)) { return 1; }
+        if(isNaN(b)) { return -1; }
+        return a > b ? 1 : -1;
+      }
+      return 1;
+    });
 
   };
 
