@@ -54,29 +54,24 @@ endpoints.</p>
 <h3>
 <a id="web" class="anchor" href="#web" aria-hidden="true"><span class="octicon octicon-link"></span></a>Web</h3>
 
-<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/data_collection-1.1.5.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-</pre></div>
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>/data_collection-1.1.6.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
 
 <p>Alternatively, the minified version can be found at</p>
 
-<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/data_collection-1.1.5-min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-</pre></div>
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>/data_collection-1.1.6-min.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
 
 <p>You can then start using <code>DataCollection</code> objects with</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">dc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DataCollection</span><span class="p">();</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> dc <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">DataCollection</span>();</pre></div>
 
 <h3>
 <a id="node" class="anchor" href="#node" aria-hidden="true"><span class="octicon octicon-link"></span></a>node</h3>
 
-<div class="highlight highlight-bash"><pre><span class="nv">$ </span>npm install data-collection
-</pre></div>
+<div class="highlight highlight-bash"><pre>$ npm install data-collection</pre></div>
 
 <p>Followed by a script with this require...</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">DataCollection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'data-collection'</span><span class="p">);</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> DataCollection <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>data-collection<span class="pl-pds">'</span></span>);</pre></div>
 
 <p>Woohoo!</p>
 
@@ -92,54 +87,52 @@ results.</p>
 <p>Let's say that I have a standardized Array containing the results of a RESTful
 API response. My data set looks like this:</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">characters</span> <span class="o">=</span> <span class="p">[</span>
-  <span class="p">{</span>
-    <span class="nx">id</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="nx">first_name</span><span class="o">:</span> <span class="s1">'Jon'</span><span class="p">,</span>
-    <span class="nx">last_name</span><span class="o">:</span> <span class="s1">'Snow'</span><span class="p">,</span>
-    <span class="nx">gender</span><span class="o">:</span> <span class="s1">'m'</span><span class="p">,</span>
-    <span class="nx">age</span><span class="o">:</span> <span class="mi">14</span><span class="p">,</span>
-    <span class="nx">location</span><span class="o">:</span> <span class="s1">'Winterfell'</span>
-  <span class="p">},</span>
-  <span class="p">{</span>
-    <span class="nx">id</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
-    <span class="nx">first_name</span><span class="o">:</span> <span class="s1">'Eddard'</span><span class="p">,</span>
-    <span class="nx">last_name</span><span class="o">:</span> <span class="s1">'Stark'</span><span class="p">,</span>
-    <span class="nx">gender</span><span class="o">:</span> <span class="s1">'m'</span><span class="p">,</span>
-    <span class="nx">age</span><span class="o">:</span> <span class="mi">35</span><span class="p">,</span>
-    <span class="nx">location</span><span class="o">:</span> <span class="s1">'Winterfell'</span>
-  <span class="p">},</span>
-  <span class="p">{</span>
-    <span class="nx">id</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
-    <span class="nx">first_name</span><span class="o">:</span> <span class="s1">'Catelyn'</span><span class="p">,</span>
-    <span class="nx">last_name</span><span class="o">:</span> <span class="s1">'Stark'</span><span class="p">,</span>
-    <span class="nx">gender</span><span class="o">:</span> <span class="s1">'f'</span><span class="p">,</span>
-    <span class="nx">age</span><span class="o">:</span> <span class="mi">33</span><span class="p">,</span>
-    <span class="nx">location</span><span class="o">:</span> <span class="s1">'Winterfell'</span>
-  <span class="p">},</span>
-  <span class="p">{</span>
-    <span class="nx">id</span><span class="o">:</span> <span class="mi">4</span><span class="p">,</span>
-    <span class="nx">first_name</span><span class="o">:</span> <span class="s1">'Roose'</span><span class="p">,</span>
-    <span class="nx">last_name</span><span class="o">:</span> <span class="s1">'Bolton'</span><span class="p">,</span>
-    <span class="nx">gender</span><span class="o">:</span> <span class="s1">'m'</span><span class="p">,</span>
-    <span class="nx">age</span><span class="o">:</span> <span class="mi">40</span><span class="p">,</span>
-    <span class="nx">location</span><span class="o">:</span> <span class="s1">'Dreadfort'</span>
-  <span class="p">},</span>
-  <span class="p">{</span>
-    <span class="nx">id</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="nx">first_name</span><span class="o">:</span> <span class="s1">'Ramsay'</span><span class="p">,</span>
-    <span class="nx">last_name</span><span class="o">:</span> <span class="s1">'Snow'</span><span class="p">,</span>
-    <span class="nx">gender</span><span class="o">:</span> <span class="s1">'m'</span><span class="p">,</span>
-    <span class="nx">age</span><span class="o">:</span> <span class="mi">15</span><span class="p">,</span>
-    <span class="nx">location</span><span class="o">:</span> <span class="s1">'Dreadfort'</span>
-  <span class="p">}</span>
-<span class="p">];</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> characters <span class="pl-k">=</span> [
+  {
+    id<span class="pl-k">:</span> <span class="pl-c1">1</span>,
+    first_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Jon<span class="pl-pds">'</span></span>,
+    last_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Snow<span class="pl-pds">'</span></span>,
+    gender<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>m<span class="pl-pds">'</span></span>,
+    age<span class="pl-k">:</span> <span class="pl-c1">14</span>,
+    location<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Winterfell<span class="pl-pds">'</span></span>
+  },
+  {
+    id<span class="pl-k">:</span> <span class="pl-c1">2</span>,
+    first_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Eddard<span class="pl-pds">'</span></span>,
+    last_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Stark<span class="pl-pds">'</span></span>,
+    gender<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>m<span class="pl-pds">'</span></span>,
+    age<span class="pl-k">:</span> <span class="pl-c1">35</span>,
+    location<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Winterfell<span class="pl-pds">'</span></span>
+  },
+  {
+    id<span class="pl-k">:</span> <span class="pl-c1">3</span>,
+    first_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Catelyn<span class="pl-pds">'</span></span>,
+    last_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Stark<span class="pl-pds">'</span></span>,
+    gender<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>f<span class="pl-pds">'</span></span>,
+    age<span class="pl-k">:</span> <span class="pl-c1">33</span>,
+    location<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Winterfell<span class="pl-pds">'</span></span>
+  },
+  {
+    id<span class="pl-k">:</span> <span class="pl-c1">4</span>,
+    first_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Roose<span class="pl-pds">'</span></span>,
+    last_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Bolton<span class="pl-pds">'</span></span>,
+    gender<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>m<span class="pl-pds">'</span></span>,
+    age<span class="pl-k">:</span> <span class="pl-c1">40</span>,
+    location<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Dreadfort<span class="pl-pds">'</span></span>
+  },
+  {
+    id<span class="pl-k">:</span> <span class="pl-c1">5</span>,
+    first_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Ramsay<span class="pl-pds">'</span></span>,
+    last_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Snow<span class="pl-pds">'</span></span>,
+    gender<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>m<span class="pl-pds">'</span></span>,
+    age<span class="pl-k">:</span> <span class="pl-c1">15</span>,
+    location<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Dreadfort<span class="pl-pds">'</span></span>
+  }
+];</pre></div>
 
 <p>First off, let's load this data into a <code>DataCollection</code>...</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">charDC</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DataCollection</span><span class="p">(</span><span class="nx">characters</span><span class="p">);</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> charDC <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">DataCollection</span>(characters);</pre></div>
 
 <p>Now, let's approach some problems...</p>
 
@@ -150,8 +143,7 @@ API response. My data set looks like this:</p>
 
 <p><code>filter</code> allows us to look for a specific value.</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">bastards</span> <span class="o">=</span> <span class="nx">charDC</span><span class="p">.</span><span class="nx">query</span><span class="p">().</span><span class="nx">filter</span><span class="p">({</span><span class="nx">last_name</span><span class="o">:</span> <span class="s1">'Snow'</span><span class="p">}).</span><span class="nx">values</span><span class="p">();</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> bastards <span class="pl-k">=</span> charDC.query().filter({last_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Snow<span class="pl-pds">'</span></span>}).values();</pre></div>
 
 <hr>
 
@@ -160,8 +152,7 @@ API response. My data set looks like this:</p>
 
 <p>A simple <code>max()</code> call will do the trick.</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">topAge</span> <span class="o">=</span> <span class="nx">charDC</span><span class="p">.</span><span class="nx">query</span><span class="p">().</span><span class="nx">max</span><span class="p">(</span><span class="s1">'age'</span><span class="p">);</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> topAge <span class="pl-k">=</span> charDC.query().<span class="pl-s3">max</span>(<span class="pl-s1"><span class="pl-pds">'</span>age<span class="pl-pds">'</span></span>);</pre></div>
 
 <hr>
 
@@ -173,8 +164,7 @@ API response. My data set looks like this:</p>
 <h6>
 <a id="datacollection" class="anchor" href="#datacollection" aria-hidden="true"><span class="octicon octicon-link"></span></a>DataCollection</h6>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">locations</span> <span class="o">=</span> <span class="nx">charDC</span><span class="p">.</span><span class="nx">query</span><span class="p">().</span><span class="nx">distinct</span><span class="p">(</span><span class="s1">'location'</span><span class="p">);</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> locations <span class="pl-k">=</span> charDC.query().distinct(<span class="pl-s1"><span class="pl-pds">'</span>location<span class="pl-pds">'</span></span>);</pre></div>
 
 <hr>
 
@@ -186,62 +176,103 @@ API response. My data set looks like this:</p>
 <h6>
 <a id="datacollection-1" class="anchor" href="#datacollection-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>DataCollection</h6>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">charDC</span><span class="p">.</span><span class="nx">query</span><span class="p">().</span><span class="nx">filter</span><span class="p">({</span><span class="nx">first_name__in</span><span class="o">:</span> <span class="p">[</span><span class="s1">'Catelyn'</span><span class="p">,</span> <span class="s1">'Eddard'</span><span class="p">]}).</span><span class="nx">remove</span><span class="p">();</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>charDC.query().filter({first_name__in<span class="pl-k">:</span> [<span class="pl-s1"><span class="pl-pds">'</span>Catelyn<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>Eddard<span class="pl-pds">'</span></span>]}).<span class="pl-s3">remove</span>();</pre></div>
 
 <hr>
 
 <h3>
 <a id="more-examples" class="anchor" href="#more-examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>More examples</h3>
 
-<div class="highlight highlight-javascript"><pre><span class="c1">// Will return Jon, Eddard and Ramsay</span>
-<span class="nx">charDC</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
-  <span class="p">.</span><span class="nx">filter</span><span class="p">({</span><span class="nx">gender</span><span class="o">:</span> <span class="s1">'m'</span><span class="p">,</span> <span class="nx">age__lt</span><span class="o">:</span> <span class="mi">40</span><span class="p">})</span>
-  <span class="p">.</span><span class="nx">values</span><span class="p">();</span>
+<div class="highlight highlight-javascript"><pre><span class="pl-c">// Will return Jon, Eddard and Ramsay</span>
+charDC.query()
+  .filter({gender<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>m<span class="pl-pds">'</span></span>, age__lt<span class="pl-k">:</span> <span class="pl-c1">40</span>})
+  .values();
 
-<span class="c1">// Updates location</span>
-<span class="nx">charDC</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
-  <span class="p">.</span><span class="nx">filter</span><span class="p">({</span><span class="nx">location</span><span class="o">:</span> <span class="s1">'Winterfell'</span><span class="p">})</span>
-  <span class="p">.</span><span class="nx">exclude</span><span class="p">({</span><span class="nx">first_name</span><span class="o">:</span> <span class="s1">'Jon'</span><span class="p">})</span>
-  <span class="p">.</span><span class="nx">update</span><span class="p">({</span><span class="nx">location</span><span class="o">:</span> <span class="s1">'King\'s Landing'</span><span class="p">});</span>
+<span class="pl-c">// Updates location</span>
+charDC.query()
+  .filter({location<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Winterfell<span class="pl-pds">'</span></span>})
+  .exclude({first_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Jon<span class="pl-pds">'</span></span>})
+  .update({location<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>King<span class="pl-cce">\'</span>s Landing<span class="pl-pds">'</span></span>});
 
-<span class="c1">// Finds Roose, Ramsay</span>
-<span class="nx">chardDC</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
-  <span class="p">.</span><span class="nx">filter</span><span class="p">({</span><span class="nx">first_name__contains</span><span class="o">:</span> <span class="s1">'R'</span><span class="p">});</span>
+<span class="pl-c">// Finds Roose, Ramsay</span>
+chardDC.query()
+  .filter({first_name__contains<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>R<span class="pl-pds">'</span></span>});
 
-<span class="c1">// Finds Roose, Ramsay, Eddard --- case insensitive</span>
-<span class="nx">charDC</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
-  <span class="p">.</span><span class="nx">filter</span><span class="p">({</span><span class="nx">first_name__icontains</span><span class="o">:</span> <span class="s1">'R'</span><span class="p">})</span>
-  <span class="p">.</span><span class="nx">values</span><span class="p">();</span>
+<span class="pl-c">// Finds Roose, Ramsay, Eddard --- case insensitive</span>
+charDC.query()
+  .filter({first_name__icontains<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>R<span class="pl-pds">'</span></span>})
+  .values();
 
-<span class="c1">// Creates a mapping for current future values...</span>
-<span class="nx">charDC</span><span class="p">.</span><span class="nx">createMapping</span><span class="p">(</span><span class="s1">'is_bastard'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">row</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nx">row</span><span class="p">.</span><span class="nx">last_name</span> <span class="o">===</span> <span class="s1">'Snow'</span><span class="p">;</span>
-<span class="p">});</span>
+<span class="pl-c">// Creates a mapping for current future values...</span>
+charDC.createMapping(<span class="pl-s1"><span class="pl-pds">'</span>is_bastard<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">row</span>) {
+  <span class="pl-k">return</span> row.last_name <span class="pl-k">===</span> <span class="pl-s1"><span class="pl-pds">'</span>Snow<span class="pl-pds">'</span></span>;
+});
 
-<span class="c1">// true</span>
-<span class="nx">charDC</span><span class="p">.</span><span class="nx">query</span><span class="p">().</span><span class="nx">filter</span><span class="p">({</span><span class="nx">first_name</span><span class="o">:</span> <span class="s1">'Jon'</span><span class="p">}).</span><span class="nx">first</span><span class="p">().</span><span class="nx">is_bastard</span><span class="p">;</span>
-<span class="c1">// false</span>
-<span class="nx">charDC</span><span class="p">.</span><span class="nx">query</span><span class="p">().</span><span class="nx">filter</span><span class="p">({</span><span class="nx">first_name</span><span class="o">:</span> <span class="s1">'Catelyn'</span><span class="p">}).</span><span class="nx">first</span><span class="p">().</span><span class="nx">is_bastard</span><span class="p">;</span>
+<span class="pl-c">// true</span>
+charDC.query().filter({first_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Jon<span class="pl-pds">'</span></span>}).first().is_bastard;
+<span class="pl-c">// false</span>
+charDC.query().filter({first_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Catelyn<span class="pl-pds">'</span></span>}).first().is_bastard;
 
-<span class="c1">// Add an entry (Can accept each entry as an argument, or an array)</span>
-<span class="nx">charDC</span><span class="p">.</span><span class="nx">insert</span><span class="p">({</span>
-  <span class="nx">id</span><span class="o">:</span> <span class="mi">6</span><span class="p">,</span>
-  <span class="nx">first_name</span><span class="o">:</span> <span class="s1">'Rob'</span><span class="p">,</span>
-  <span class="nx">last_name</span><span class="o">:</span> <span class="s1">'Stark'</span><span class="p">,</span>
-  <span class="nx">gender</span><span class="o">:</span> <span class="s1">'m'</span><span class="p">,</span>
-  <span class="nx">age</span><span class="o">:</span> <span class="mi">14</span><span class="p">,</span>
-  <span class="nx">location</span><span class="o">:</span> <span class="s1">'Winterfell'</span>
-<span class="p">});</span>
+<span class="pl-c">// Add an entry (Can accept each entry as an argument, or an array)</span>
+charDC.insert({
+  id<span class="pl-k">:</span> <span class="pl-c1">6</span>,
+  first_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Rob<span class="pl-pds">'</span></span>,
+  last_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Stark<span class="pl-pds">'</span></span>,
+  gender<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>m<span class="pl-pds">'</span></span>,
+  age<span class="pl-k">:</span> <span class="pl-c1">14</span>,
+  location<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Winterfell<span class="pl-pds">'</span></span>
+});
 
-<span class="c1">// new entry, but is also false</span>
-<span class="nx">charDC</span><span class="p">.</span><span class="nx">query</span><span class="p">().</span><span class="nx">filer</span><span class="p">({</span><span class="nx">first_name</span><span class="o">:</span> <span class="s1">'Rob'</span><span class="p">}).</span><span class="nx">first</span><span class="p">().</span><span class="nx">is_bastard</span><span class="p">;</span>
+<span class="pl-c">// new entry, but is also false</span>
+charDC.query().filter({first_name<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>Rob<span class="pl-pds">'</span></span>}).first().is_bastard;
 
-<span class="c1">// will return Eddard and Catelyn rows</span>
-<span class="nx">charDC</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
-  <span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="s1">'age'</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span> <span class="c1">// sortDesc = true</span>
-  <span class="p">.</span><span class="nx">limit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">values</span><span class="p">();</span>
+<span class="pl-c">// will return Eddard and Catelyn rows</span>
+charDC.query()
+  .<span class="pl-s3">sort</span>(<span class="pl-s1"><span class="pl-pds">'</span>age<span class="pl-pds">'</span></span>, <span class="pl-c1">true</span>) <span class="pl-c">// sortDesc = true</span>
+  .limit(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>)
+  .values();</pre></div>
+
+<h3>
+<a id="nested-objects" class="anchor" href="#nested-objects" aria-hidden="true"><span class="octicon octicon-link"></span></a>Nested objects</h3>
+
+<p>What if I have object inside of my DataCollection? Can I filter and sort by
+those fields as well?</p>
+
+<p>Of course! Separate nested fields by double underscores (<code>__</code>).</p>
+
+<p>Please note that when using this method, exact values must be checked for using
+<code>'__is'</code>.</p>
+
+<div class="highlight highlight-javascript"><pre>
+<span class="pl-s">var</span> dc <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">DataCollection</span>();
+dc.<span class="pl-s3">load</span>([{
+  main<span class="pl-k">:</span> {
+    sub<span class="pl-k">:</span> <span class="pl-c1">7</span>,
+    sub2<span class="pl-k">:</span> {
+      low<span class="pl-k">:</span> <span class="pl-c1">8</span>
+    }
+  }
+}, {
+  main<span class="pl-k">:</span> {
+    sub<span class="pl-k">:</span> <span class="pl-c1">7</span>,
+    sub2<span class="pl-k">:</span> {
+      low<span class="pl-k">:</span> <span class="pl-c1">20</span>
+    }
+  }
+}, {
+  main<span class="pl-k">:</span> {
+    sub<span class="pl-k">:</span> <span class="pl-k">-</span><span class="pl-c1">1</span>,
+    sub2<span class="pl-k">:</span> {
+      low<span class="pl-k">:</span> <span class="pl-c1">16</span>
+    }
+  }
+}]);
+
+<span class="pl-c">// Returns only first two rows</span>
+dc.query().filter({main__sub__is<span class="pl-k">:</span> <span class="pl-c1">7</span>}).values();
+
+<span class="pl-c">// Returns only last two rows</span>
+dc.query().filter({main__sub__low__gte<span class="pl-k">:</span> <span class="pl-c1">10</span>}).values();
 </pre></div>
 
 <p>And there's more! Try playing around.</p>
@@ -299,11 +330,10 @@ API response. My data set looks like this:</p>
 <h6>
 <a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example:</h6>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">dc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DataCollection</span><span class="p">();</span>
-<span class="nx">dc</span><span class="p">.</span><span class="nx">createMapping</span><span class="p">(</span><span class="s1">'c'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">row</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">row</span><span class="p">[</span><span class="s1">'a'</span><span class="p">]</span> <span class="o">+</span> <span class="nx">row</span><span class="p">[</span><span class="s1">'b'</span><span class="p">];</span> <span class="p">});</span>
-<span class="nx">dc</span><span class="p">.</span><span class="nx">load</span><span class="p">([{</span><span class="nx">a</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">b</span><span class="o">:</span> <span class="mi">2</span><span class="p">},</span> <span class="p">{</span><span class="nx">a</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">b</span><span class="o">:</span> <span class="mi">3</span><span class="p">}]);</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">dc</span><span class="p">.</span><span class="nx">query</span><span class="p">().</span><span class="nx">last</span><span class="p">());</span> <span class="c1">// logs {a: 2, b: 3, c: 5}</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> dc <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">DataCollection</span>();
+dc.createMapping(<span class="pl-s1"><span class="pl-pds">'</span>c<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">row</span>) { <span class="pl-k">return</span> row[<span class="pl-s1"><span class="pl-pds">'</span>a<span class="pl-pds">'</span></span>] <span class="pl-k">+</span> row[<span class="pl-s1"><span class="pl-pds">'</span>b<span class="pl-pds">'</span></span>]; });
+dc.<span class="pl-s3">load</span>([{a<span class="pl-k">:</span> <span class="pl-c1">1</span>, b<span class="pl-k">:</span> <span class="pl-c1">2</span>}, {a<span class="pl-k">:</span> <span class="pl-c1">2</span>, b<span class="pl-k">:</span> <span class="pl-c1">3</span>}]);
+<span class="pl-en">console</span><span class="pl-s3">.log</span>(dc.query().last()); <span class="pl-c">// logs {a: 2, b: 3, c: 5}</span></pre></div>
 
 <hr>
 
@@ -459,16 +489,15 @@ insert( [Array] data )
 <h6>
 <a id="example-1" class="anchor" href="#example-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h6>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">dc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DataCollection</span><span class="p">([{</span><span class="nx">a</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">b</span><span class="o">:</span> <span class="mi">2</span><span class="p">},</span> <span class="p">{</span><span class="nx">a</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">c</span><span class="o">:</span> <span class="mi">3</span><span class="p">}]);</span>
-<span class="kd">var</span> <span class="nx">query</span> <span class="o">=</span> <span class="nx">dc</span><span class="p">.</span><span class="nx">query</span><span class="p">();</span>
-<span class="nx">dc</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">row</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">index</span> <span class="o">+</span> <span class="s1">': '</span> <span class="o">+</span> <span class="nx">row</span><span class="p">[</span><span class="s1">'a'</span><span class="p">]</span> <span class="o">+</span> <span class="s1">', '</span> <span class="o">+</span> <span class="nx">row</span><span class="p">[</span><span class="s1">'b'</span><span class="p">]);</span>
-<span class="p">});</span>
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> dc <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">DataCollection</span>([{a<span class="pl-k">:</span> <span class="pl-c1">1</span>, b<span class="pl-k">:</span> <span class="pl-c1">2</span>}, {a<span class="pl-k">:</span> <span class="pl-c1">2</span>, c<span class="pl-k">:</span> <span class="pl-c1">3</span>}]);
+<span class="pl-s">var</span> query <span class="pl-k">=</span> dc.query();
+dc.each(<span class="pl-st">function</span>(<span class="pl-vpf">row</span>, <span class="pl-vpf">index</span>) {
+  <span class="pl-en">console</span><span class="pl-s3">.log</span>(index <span class="pl-k">+</span> <span class="pl-s1"><span class="pl-pds">'</span>: <span class="pl-pds">'</span></span> <span class="pl-k">+</span> row[<span class="pl-s1"><span class="pl-pds">'</span>a<span class="pl-pds">'</span></span>] <span class="pl-k">+</span> <span class="pl-s1"><span class="pl-pds">'</span>, <span class="pl-pds">'</span></span> <span class="pl-k">+</span> row[<span class="pl-s1"><span class="pl-pds">'</span>b<span class="pl-pds">'</span></span>]);
+});
 
-<span class="c1">// logs</span>
-<span class="c1">//    0: 1, 2</span>
-<span class="c1">//    1: 2, 3</span>
-</pre></div>
+<span class="pl-c">// logs</span>
+<span class="pl-c">//    0: 1, 2</span>
+<span class="pl-c">//    1: 2, 3</span></pre></div>
 
 <hr>
 
@@ -555,6 +584,17 @@ sequence( [Array] indexedValues )
 <hr>
 
 <h5>
+<a id="datacollectionqueryprototypejson" class="anchor" href="#datacollectionqueryprototypejson" aria-hidden="true"><span class="octicon octicon-link"></span></a>DataCollectionQuery.prototype.json</h5>
+
+<pre><code>json( [Optional String] key )
+  returns String
+</code></pre>
+
+<p>Returns a JSON-stringified version of <code>.values()</code></p>
+
+<hr>
+
+<h5>
 <a id="datacollectionqueryprototypemax" class="anchor" href="#datacollectionqueryprototypemax" aria-hidden="true"><span class="octicon octicon-link"></span></a>DataCollectionQuery.prototype.max</h5>
 
 <pre><code>max( [String] key )
@@ -599,6 +639,38 @@ sequence( [Array] indexedValues )
 
 <p>Returns the numeric average of all values contained in key from the
   <code>DataCollectionQuery</code> subset</p>
+
+<hr>
+
+<h5>
+<a id="datacollectionqueryprototypetransform" class="anchor" href="#datacollectionqueryprototypetransform" aria-hidden="true"><span class="octicon octicon-link"></span></a>DataCollectionQuery.prototype.transform</h5>
+
+<pre><code>transform( [Object] keyMapPair )
+  returns new DataCollectionQuery
+</code></pre>
+
+<p>Maps each row of the current DataCollectionQuery to a new object with
+  specified keys.</p>
+
+<p>The "map" in keyMapPair can be either a string representation of a key or a
+  mapping function.</p>
+
+<div class="highlight highlight-javascript"><pre>  dc.<span class="pl-s3">load</span>([
+    {a<span class="pl-k">:</span> <span class="pl-c1">1</span>, b<span class="pl-k">:</span> <span class="pl-c1">2</span>, c<span class="pl-k">:</span> <span class="pl-c1">3</span>},
+    {a<span class="pl-k">:</span> <span class="pl-c1">4</span>, b<span class="pl-k">:</span> <span class="pl-c1">5</span>, c<span class="pl-k">:</span> <span class="pl-c1">6</span>}
+  ]);
+
+  dc.query().transform({d<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>a<span class="pl-pds">'</span></span>, e<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>b<span class="pl-pds">'</span></span>, <span class="pl-en">f</span>: <span class="pl-st">function</span>(<span class="pl-vpf">row</span>) { <span class="pl-k">return</span> row.a <span class="pl-k">+</span> row.b <span class="pl-k">+</span> row.c; }}).values();
+
+  <span class="pl-c">/* will return...</span>
+<span class="pl-c"></span>
+<span class="pl-c">  [</span>
+<span class="pl-c">    {d: 1, e: 2, c: 6},</span>
+<span class="pl-c">    {d: 4, e: 5, c: 15}</span>
+<span class="pl-c">  ]</span>
+<span class="pl-c"></span>
+<span class="pl-c">  */</span>
+</pre></div>
 
 <hr>
 
@@ -658,11 +730,15 @@ another project of ours, <a href="http://github.com/thestorefront/FastAPI">FastA
 
 <p>All filters are prefixed with a double underscore when used.</p>
 
+<p>Please note that DataCollection supports filtering (and sorting) based on nested
+objects. The syntax is for find the <code>is</code> filtered value of a nested field would
+be <code>{field__nestedField__is: 7}</code>. You can nest indefinitely using double
+underscores.</p>
+
 <h5>
 <a id="is" class="anchor" href="#is" aria-hidden="true"><span class="octicon octicon-link"></span></a>is</h5>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">a</span> <span class="o">===</span> <span class="nx">b</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>a <span class="pl-k">===</span> b</pre></div>
 
 <p>Checks for exact equivalence. Equivalent to no specified filter. (Only the field
 name). Exists for the purpose of standardization and edge cases (i.e. if your
@@ -673,8 +749,7 @@ field ends with <code>__</code>).</p>
 <h5>
 <a id="not" class="anchor" href="#not" aria-hidden="true"><span class="octicon octicon-link"></span></a>not</h5>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">a</span> <span class="o">!==</span> <span class="nx">b</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>a <span class="pl-k">!==</span> b</pre></div>
 
 <p>Checks for inequivalence. (Not exactly matching.)</p>
 
@@ -683,8 +758,7 @@ field ends with <code>__</code>).</p>
 <h5>
 <a id="gt" class="anchor" href="#gt" aria-hidden="true"><span class="octicon octicon-link"></span></a>gt</h5>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">a</span> <span class="o">&gt;</span> <span class="nx">b</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>a <span class="pl-k">&gt;</span> b</pre></div>
 
 <p>Checks if contained value is greater than provided value.</p>
 
@@ -693,8 +767,7 @@ field ends with <code>__</code>).</p>
 <h5>
 <a id="gte" class="anchor" href="#gte" aria-hidden="true"><span class="octicon octicon-link"></span></a>gte</h5>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">a</span> <span class="o">&gt;=</span> <span class="nx">b</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>a <span class="pl-k">&gt;=</span> b</pre></div>
 
 <p>Checks if contained value is greater than or equal to provided value.</p>
 
@@ -703,8 +776,7 @@ field ends with <code>__</code>).</p>
 <h5>
 <a id="lt" class="anchor" href="#lt" aria-hidden="true"><span class="octicon octicon-link"></span></a>lt</h5>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">a</span> <span class="o">&lt;</span> <span class="nx">b</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>a <span class="pl-k">&lt;</span> b</pre></div>
 
 <p>Checks if contained value is less than provided value.</p>
 
@@ -713,8 +785,7 @@ field ends with <code>__</code>).</p>
 <h5>
 <a id="lte" class="anchor" href="#lte" aria-hidden="true"><span class="octicon octicon-link"></span></a>lte</h5>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">a</span> <span class="o">&lt;=</span> <span class="nx">b</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>a <span class="pl-k">&lt;=</span> b</pre></div>
 
 <p>Checks if contained value is less than or equal to provided value.</p>
 
@@ -723,8 +794,7 @@ field ends with <code>__</code>).</p>
 <h5>
 <a id="contains" class="anchor" href="#contains" aria-hidden="true"><span class="octicon octicon-link"></span></a>contains</h5>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">a</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>a.<span class="pl-s3">indexOf</span>(b) <span class="pl-k">&gt;</span> <span class="pl-k">-</span><span class="pl-c1">1</span></pre></div>
 
 <p>Checks if contained value contains the provided value. Works for strings
 or arrays.</p>
@@ -734,8 +804,7 @@ or arrays.</p>
 <h5>
 <a id="icontains" class="anchor" href="#icontains" aria-hidden="true"><span class="octicon octicon-link"></span></a>icontains</h5>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">a</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>a.<span class="pl-s3">toLowerCase</span>().<span class="pl-s3">indexOf</span>(b.<span class="pl-s3">toLowerCase</span>()) <span class="pl-k">&gt;</span> <span class="pl-k">-</span><span class="pl-c1">1</span></pre></div>
 
 <p>Case insensitive contains. Only works for strings comparisons.</p>
 
@@ -744,8 +813,7 @@ or arrays.</p>
 <h5>
 <a id="in" class="anchor" href="#in" aria-hidden="true"><span class="octicon octicon-link"></span></a>in</h5>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">b</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>b.<span class="pl-s3">indexOf</span>(a) <span class="pl-k">&gt;</span> <span class="pl-k">-</span><span class="pl-c1">1</span></pre></div>
 
 <p>Checks if the contained value exists in the provided value. Works for strings or
 arrays.</p>
@@ -755,8 +823,7 @@ arrays.</p>
 <h5>
 <a id="not_in" class="anchor" href="#not_in" aria-hidden="true"><span class="octicon octicon-link"></span></a>not_in</h5>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">b</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>b.<span class="pl-s3">indexOf</span>(a) <span class="pl-k">===</span> <span class="pl-k">-</span><span class="pl-c1">1</span></pre></div>
 
 <p>Checks if the contained value does not exist in the provided value. Works for
 strings or arrays.</p>
