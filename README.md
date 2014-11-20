@@ -19,13 +19,13 @@ You can begin using DataCollection.js by embedding the following script (assumes
 ### Web
 
 ```html
-<script src="/data_collection-1.1.5.js"></script>
+<script src="/data_collection-1.1.6.js"></script>
 ```
 
 Alternatively, the minified version can be found at
 
 ```html
-<script src="/data_collection-1.1.5-min.js"></script>
+<script src="/data_collection-1.1.6-min.js"></script>
 ```
 
 You can then start using `DataCollection` objects with
@@ -202,13 +202,57 @@ charDC.insert({
 });
 
 // new entry, but is also false
-charDC.query().filer({first_name: 'Rob'}).first().is_bastard;
+charDC.query().filter({first_name: 'Rob'}).first().is_bastard;
 
 // will return Eddard and Catelyn rows
 charDC.query()
   .sort('age', true) // sortDesc = true
   .limit(1, 2)
   .values();
+```
+
+### Nested objects
+
+What if I have object inside of my DataCollection? Can I filter and sort by
+those fields as well?
+
+Of course! Separate nested fields by double underscores (`__`).
+
+Please note that when using this method, exact values must be checked for using
+`'__is'`.
+
+```javascript
+
+var dc = new DataCollection();
+dc.load([{
+  main: {
+    sub: 7,
+    sub2: {
+      low: 8
+    }
+  }
+}, {
+  main: {
+    sub: 7,
+    sub2: {
+      low: 20
+    }
+  }
+}, {
+  main: {
+    sub: -1,
+    sub2: {
+      low: 16
+    }
+  }
+}]);
+
+// Returns only first two rows
+dc.query().filter({main__sub__is: 7}).values();
+
+// Returns only last two rows
+dc.query().filter({main__sub__low__gte: 10}).values();
+
 ```
 
 And there's more! Try playing around.
@@ -496,6 +540,16 @@ values( [Optional String] key )
 
 ---
 
+##### DataCollectionQuery.prototype.json
+```
+json( [Optional String] key )
+  returns String
+```
+
+  Returns a JSON-stringified version of `.values()`
+
+---
+
 ##### DataCollectionQuery.prototype.max
 ```
 max( [String] key )
@@ -537,6 +591,39 @@ avg( [String] key )
 
   Returns the numeric average of all values contained in key from the
   `DataCollectionQuery` subset
+
+---
+
+##### DataCollectionQuery.prototype.transform
+```
+transform( [Object] keyMapPair )
+  returns new DataCollectionQuery
+```
+
+  Maps each row of the current DataCollectionQuery to a new object with
+  specified keys.
+
+  The "map" in keyMapPair can be either a string representation of a key or a
+  mapping function.
+
+```javascript
+  dc.load([
+    {a: 1, b: 2, c: 3},
+    {a: 4, b: 5, c: 6}
+  ]);
+
+  dc.query().transform({d: 'a', e: 'b', f: function(row) { return row.a + row.b + row.c; }}).values();
+
+  /* will return...
+
+  [
+    {d: 1, e: 2, c: 6},
+    {d: 4, e: 5, c: 15}
+  ]
+
+  */
+
+```
 
 ---
 
@@ -590,6 +677,11 @@ functions. Many will be familiar if you've used the Django ORM or checked out
 another project of ours, [FastAPI](http://github.com/thestorefront/FastAPI).
 
 All filters are prefixed with a double underscore when used.
+
+Please note that DataCollection supports filtering (and sorting) based on nested
+objects. The syntax is for find the `is` filtered value of a nested field would
+be `{field__nestedField__is: 7}`. You can nest indefinitely using double
+underscores.
 
 ##### is
 ```javascript
