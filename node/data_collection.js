@@ -524,48 +524,52 @@ DataCollectionQuery.prototype.order = function(key, orderDesc) {
     'b',
     [
       'var val = ' + (orderDesc ? -1 : 1) + ';',
-      'if(a' + key + ' === b' + key + ') { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
-      'if(a' + key + ' === undefined) { return 1; }',
-      'if(b' + key + ' === undefined) { return -1; }',
-      'if(a' + key + ' === null) { return 1; }',
-      'if(b' + key + ' === null) { return -1; }',
-      'if(typeof a' + key + ' === \'function\') {',
-      '  if(typeof b' + key + ' === \'function\') { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
+      'var a__uniq = a.__uniqid__',
+      'var b__uniq = b.__uniqid__',
+      'a = a' + key + ';',
+      'b = b' + key + ';',
+      'if(a === b) { return a__uniq > b__uniq ? (val) : -(val); }',
+      'if(a === undefined) { return 1; }',
+      'if(b === undefined) { return -1; }',
+      'if(a === null) { return 1; }',
+      'if(b === null) { return -1; }',
+      'if(typeof a === \'function\') {',
+      '  if(typeof b === \'function\') { return a__uniq > b__uniq ? (val) : -(val); }',
       '  return -1;',
       '}',
-      'if(typeof a' + key + ' === \'object\') {',
-      '  if(typeof b' + key + ' === \'function\') { return 1; }',
-      '  if(typeof b' + key + ' === \'object\') {',
-      '    if(a' + key + ' instanceof Date && b' + key + ' instanceof Date) {',
-      '        return a' + key + '.valueOf() > b' + key + '.valueOf() ? (val) : -(val);',
+      'if(typeof a === \'object\') {',
+      '  if(typeof b === \'function\') { return 1; }',
+      '  if(typeof b === \'object\') {',
+      '    if(a instanceof Date && b instanceof Date) {',
+      '        return a.valueOf() > b.valueOf() ? (val) : -(val);',
       '    }',
-      '    if(a' + key + ' instanceof Date) { return 1; }',
-      '    if(b' + key + ' instanceof Date) { return -1; }',
-      '    return a.__uniqid__ > b.__uniqid__ ? (val) : -(val);',
+      '    if(a instanceof Date) { return 1; }',
+      '    if(b instanceof Date) { return -1; }',
+      '    return a__uniq > b__uniq ? (val) : -(val);',
       '  }',
       '  return -1;',
       '}',
-      'if(typeof a' + key + ' === \'string\') {',
-      '  if(typeof b' + key + ' === \'function\') { return 1; }',
-      '  if(typeof b' + key + ' === \'object\') { return 1; }',
-      '  if(typeof b' + key + ' === \'string\') { return a' + key + ' > b' + key + ' ? (val) : -(val); }',
+      'if(typeof a === \'string\') {',
+      '  if(typeof b === \'function\') { return 1; }',
+      '  if(typeof b === \'object\') { return 1; }',
+      '  if(typeof b === \'string\') { return a > b ? (val) : -(val); }',
       '  return -1;',
       '}',
-      'if(typeof a' + key + ' === \'boolean\') {',
-      '  if(typeof b' + key + ' === \'boolean\') { return a' + key + ' > b' + key + ' ? (val) : -(val); }',
-      '  if(typeof b' + key + ' === \'number\') { return -1; }',
+      'if(typeof a === \'boolean\') {',
+      '  if(typeof b === \'boolean\') { return a > b ? (val) : -(val); }',
+      '  if(typeof b === \'number\') { return -1; }',
       '  return 1;',
       '}',
-      'if(typeof a' + key + ' === \'number\') {',
-      '  if(typeof b' + key + ' === \'number\') {',
-      '    if(isNaN(a' + key + ') && isNaN(b' + key + ')) { return a.__uniqid__ > b.__uniqid__ ? (val) : -(val); }',
-      '    if(isNaN(a' + key + ')) { return 1; }',
-      '    if(isNaN(b' + key + ')) { return -1; }',
-      '    return a' + key + ' > b' + key + ' ? (val) : -(val);',
+      'if(typeof a === \'number\') {',
+      '  if(typeof b === \'number\') {',
+      '    if(isNaN(a) && isNaN(b)) { return a__uniq > b__uniq ? (val) : -(val); }',
+      '    if(isNaN(a)) { return 1; }',
+      '    if(isNaN(b)) { return -1; }',
+      '    return a > b ? (val) : -(val);',
       '  }',
       '  return 1;',
       '}',
-      'return a.__uniqid__ > b.__uniqid__ ? (val) : -(val);'
+      'return a__uniq > b__uniq ? (val) : -(val);'
     ].join('\n')
   );
 
@@ -868,5 +872,79 @@ DataCollectionQuery.prototype.last = function() {
   }
 
   return this._data[this._data.length - 1];
+
+};
+
+DataCollectionQuery.prototype.transform = function(keyMapPairs) {
+
+  if(typeof keyMapPairs !== 'object' || keyMapPairs === null) {
+    throw new Error('keyMapPairs must be valid object');
+  }
+
+  var keys = Object.keys(keyMapPairs);
+  var key;
+
+  var functionKeyMapPairs = {};
+  var stringKeyMapPairs = {};
+
+  var i, k;
+
+  for(k = 0, klen = keys.length; k < klen; k++) {
+
+    key = keys[k];
+
+    if(typeof keyMapPairs[key] === 'string') {
+      stringKeyMapPairs[key] = keyMapPairs[key];
+      continue;
+    }
+
+    if(typeof keyMapPairs[key] === 'function') {
+      functionKeyMapPairs[key] = keyMapPairs[key];
+      continue;
+    }
+
+    throw new Error('keyMapPairs can only contain functions or strings');
+
+  }
+
+  var stringKeys = Object.keys(stringKeyMapPairs);
+  var functionKeys = Object.keys(functionKeyMapPairs);
+
+  var stringKeysLength = stringKeys.length;
+  var functionKeysLength = functionKeys.length;
+
+  var data = this._data;
+  var len = data.length;
+  var outputData = Array(len);
+
+  var datum;
+  var outputDatum;
+
+  for(i = 0; i < len; i++) {
+
+    datum = data[i];
+    outputDatum = Object.create(null);
+
+    for(k = 0, klen = stringKeysLength; k < klen; k++) {
+      key = stringKeys[k];
+      outputDatum[key] = datum[stringKeyMapPairs[key]];
+    }
+
+    for(k = 0, klen = functionKeysLength; k < klen; k++) {
+      key = functionKeys[k];
+      outputDatum[key] = functionKeyMapPairs[key].call(this, datum);
+    }
+
+    outputData[i] = outputDatum;
+
+  }
+
+  return new DataCollectionQuery(this.__parent, outputData);
+
+};
+
+DataCollectionQuery.prototype.json = function(key) {
+
+  return JSON.stringify(this.values(key));
 
 };

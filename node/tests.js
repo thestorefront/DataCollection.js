@@ -784,4 +784,95 @@ console.assert((function() {
 
 })(), 'Got distinct values (varying types) correctly');
 
+
+var dc6 = new DataCollection();
+
+dc6.load([
+  {a: 0, b: 1, c: 2},
+  {a: 3, b: 4, c: 5},
+  {a: 6, b: 7, c: 8},
+]);
+
+console.assert(function() {
+
+  var values = dc6.query().transform({d: 'a', e: 'b', f: function(row) { return row.a + row.b + row.c; }}).values();
+
+  if(values.length !== 3) { return false; }
+
+  var continueTest = true;
+
+  continueTest && (values[0].d === 0) || (continueTest = false);
+  continueTest && (values[0].e === 1) || (continueTest = false);
+  continueTest && (values[0].f === 3) || (continueTest = false);
+  delete values[0].d;
+  delete values[0].e;
+  delete values[0].f;
+  (Object.keys(values[0]).length === 0) || (continueTest = false);
+
+  continueTest && (values[1].d === 3) || (continueTest = false);
+  continueTest && (values[1].e === 4) || (continueTest = false);
+  continueTest && (values[1].f === 12) || (continueTest = false);
+  delete values[1].d;
+  delete values[1].e;
+  delete values[1].f;
+  (Object.keys(values[1]).length === 0) || (continueTest = false);
+
+  continueTest && (values[2].d === 6) || (continueTest = false);
+  continueTest && (values[2].e === 7) || (continueTest = false);
+  continueTest && (values[2].f === 21) || (continueTest = false);
+  delete values[2].d;
+  delete values[2].e;
+  delete values[2].f;
+  (Object.keys(values[2]).length === 0) || (continueTest = false);
+
+  return continueTest;
+
+}(), 'Properly transformed input data with strings and functions');
+
+console.assert(function() {
+
+  try {
+    dc6.query().transform(null);
+  } catch(e) {
+    return true;
+  }
+
+}(), 'Transform called with null throws error');
+
+console.assert(function() {
+
+  try {
+    dc6.query().transform('string');
+  } catch(e) {
+    return true;
+  }
+
+}(), 'Transform called with non-object throws error');
+
+console.assert(function() {
+
+  try {
+    dc6.query().transform({lol: 'a', wat: function() {}, ok: null});
+  } catch(e) {
+    return true;
+  }
+
+}(), 'Transform called with non-string and non-function mapping throws error');
+
+console.assert(function() {
+
+  var str = dc6.query().json();
+
+  return str === '[{"a":0,"b":1,"c":2},{"a":3,"b":4,"c":5},{"a":6,"b":7,"c":8}]';
+
+}(), '.json() works correctly for objects');
+
+console.assert(function() {
+
+  var str = dc6.query().json('a');
+
+  return str === '[0,3,6]';
+
+}(), '.json() works correctly for keys');
+
 console.log('Passed ' + passed + ' of ' + count + ' tests. (' + Math.round((passed/count) * 100) + '%)');
