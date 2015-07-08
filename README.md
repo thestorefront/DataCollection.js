@@ -453,7 +453,7 @@ each( [Function] callback -> ([Object] row, [Integer] index) )
 ```javascript
 var dc = new DataCollection([{a: 1, b: 2}, {a: 2, c: 3}]);
 var query = dc.query();
-dc.each(function(row, index) {
+query.each(function(row, index) {
   console.log(index + ': ' + row['a'] + ', ' + row['b']);
 });
 
